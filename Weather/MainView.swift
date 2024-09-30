@@ -14,9 +14,9 @@ struct MainView: View {
     
     var body: some View {
         TabView(selection: $selectedTab) {
-            Text("1")
+            MyLocationView()
                 .tag(0)
-            Text("2")
+            LocationView()
                 .tag(1)
         }
         .font(.headline)
