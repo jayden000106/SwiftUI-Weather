@@ -16,6 +16,10 @@ struct ForecastOfDay: View {
     private let minTempertureOfWeek: Int
     private let maxTempertureOfWeek: Int
     
+    private var range: CGFloat {
+        return 80 / CGFloat(maxTempertureOfWeek - minTempertureOfWeek)
+    }
+    
     init(
         weekday: String,
         weatherCode: Int,
@@ -58,8 +62,8 @@ struct ForecastOfDay: View {
                             )
                         )
                         .frame(height: 2)
-                        .padding(.leading)
-                        .padding(.trailing)
+                        .padding(.leading, CGFloat((minTemperture - minTempertureOfWeek)) * range)
+                        .padding(.trailing, CGFloat((maxTempertureOfWeek - maxTemperture)) * range)
                 }
                 .frame(width: 80)
                 
