@@ -10,11 +10,11 @@ import SwiftUI
 struct LocationView: View {
     var body: some View {
         ScrollView {
-            VStack(spacing: 32) {
+            VStack(spacing: 8) {
                 header
                 summary
+                forecastsOfDay
             }
-            .padding(.vertical, 40)
         }
         .scrollIndicators(.hidden)
     }
@@ -37,6 +37,7 @@ private extension LocationView {
                 .font(.title3)
                 .foregroundStyle(Color.font)
         }
+        .padding(.vertical, 40)
     }
     
     var summary: some View {
@@ -45,14 +46,16 @@ private extension LocationView {
                 .font(.body)
                 .foregroundStyle(Color.font)
                 .padding(16)
-            Rectangle()
-                .fill(Color.tabBarDivier)
-                .frame(height: 1)
+            Divider()
                 .padding(.horizontal, 16)
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(0...12, id: \.self) { index in
-                        SmallWeatherInfo(time: index == 0 ? "Now" : "\(index)PM", weatherCode: 3, temperture: 21)
+                        SmallWeatherInfo(
+                            time: index == 0 ? "Now" : "\(index)PM",
+                            weatherCode: 3,
+                            temperture: 21
+                        )
                     }
                 }
                 .padding(.horizontal, 16)
@@ -64,7 +67,37 @@ private extension LocationView {
             RoundedRectangle(cornerRadius: 16)
                 .fill(.ultraThinMaterial.opacity(0.05))
         }
-        .padding(20)
+        .padding(.horizontal, 20)
+    }
+    
+    var forecastsOfDay: some View {
+        LazyVStack(alignment: .leading, spacing: 4) {
+            HStack(spacing: 4) {
+                Image(systemName: "calendar")
+                Text("10일간의 일기예보")
+            }
+            .font(.caption)
+            .foregroundStyle(Color.white.opacity(0.4))
+            .padding(.bottom, 4)
+            
+            ForEach(0..<10, id: \.self) { index in
+                Divider()
+                ForecastOfDay(
+                    weekday: "오늘",
+                    weatherCode: 3,
+                    minTemperture: 12,
+                    maxTemperture: 23,
+                    minTempertureOfWeek: 11,
+                    maxTempertureOfWeek: 24
+                )
+            }
+        }
+        .padding()
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.ultraThinMaterial.opacity(0.05))
+        }
+        .padding(.horizontal, 20)
     }
 }
 
