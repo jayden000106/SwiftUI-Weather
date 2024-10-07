@@ -13,15 +13,16 @@ struct MainView: View {
     private let tabs = [0, 1]
     
     var body: some View {
-        TabView(selection: $selectedTab) {
-            MyLocationView()
-                .tag(0)
-            LocationView()
-                .tag(1)
-        }
-        .font(.headline)
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .overlay(alignment: .bottom) {
+        VStack(spacing: 0) {
+            TabView(selection: $selectedTab) {
+                MyLocationView()
+                    .tag(0)
+                LocationView()
+                    .tag(1)
+            }
+            .font(.headline)
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            
             WeatherTabBar(selected: $selectedTab, selections: tabs)
                 .padding(.bottom, 8)
                 .background(Color.tabBarBackground)
