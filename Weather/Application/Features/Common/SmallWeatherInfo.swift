@@ -8,23 +8,19 @@
 import SwiftUI
 
 struct SmallWeatherInfo: View {
-    private let time: String
-    private let weatherCode: Int
-    private let temperture: Int
+    private let hourlyWeather: HourlyWeather
     
-    init(time: String, weatherCode: Int, temperture: Int) {
-        self.time = time
-        self.weatherCode = weatherCode
-        self.temperture = temperture
+    init(hourlyWeather: HourlyWeather) {
+        self.hourlyWeather = hourlyWeather
     }
     
     var body: some View {
         VStack(spacing: 16) {
-            Text(time)
+            Text(hourlyWeather.time)
                 .font(.body)
             Image(systemName: "cloud.moon.fill")
                 .font(.title3)
-            Text("\(temperture)°")
+            Text("\(hourlyWeather.temperture)°")
                 .font(.title3)
         }
         .padding(12)
@@ -33,6 +29,12 @@ struct SmallWeatherInfo: View {
 }
 
 #Preview {
-    SmallWeatherInfo(time: "Now", weatherCode: 2, temperture: 21)
-        .background { Color.black }
+    SmallWeatherInfo(
+        hourlyWeather: HourlyWeather(
+            time: "Now",
+            weatherCode: 2,
+            temperture: 21
+        )
+    )
+    .background { Color.black }
 }

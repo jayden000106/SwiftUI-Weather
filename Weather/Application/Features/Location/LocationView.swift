@@ -46,16 +46,12 @@ private extension LocationView {
                 .font(.body)
                 .foregroundStyle(Color.font)
                 .padding(16)
-            Divider()
+            WeatherDivider()
                 .padding(.horizontal, 16)
             ScrollView(.horizontal) {
                 HStack {
-                    ForEach(0...12, id: \.self) { index in
-                        SmallWeatherInfo(
-                            time: index == 0 ? "Now" : "\(index)PM",
-                            weatherCode: 3,
-                            temperture: 21
-                        )
+                    ForEach(dummyHourlyWeather, id: \.self) { hourlyWeather in
+                        SmallWeatherInfo(hourlyWeather: hourlyWeather)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -80,16 +76,15 @@ private extension LocationView {
             .foregroundStyle(Color.white.opacity(0.4))
             .padding(.bottom, 4)
             
-            ForEach(0..<10, id: \.self) { index in
-                Divider()
-                ForecastOfDay(
-                    weekday: "오늘",
-                    weatherCode: 3,
-                    minTemperture: 12,
-                    maxTemperture: 23,
-                    minTempertureOfWeek: 11,
-                    maxTempertureOfWeek: 24
-                )
+            ForEach(dummyDailyWeather, id: \.self) { dailyWeather in
+                VStack(spacing: 4) {
+                    WeatherDivider()
+                    ForecastOfDay(
+                        dailyWeather: dailyWeather,
+                        minTempertureOfWeek: dummyDailyWeather.map { $0.minTemperture }.min() ?? 0,
+                        maxTempertureOfWeek: dummyDailyWeather.map { $0.maxTemperture }.max() ?? 100
+                    )
+                }
             }
         }
         .padding()
