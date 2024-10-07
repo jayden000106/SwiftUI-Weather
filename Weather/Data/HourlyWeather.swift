@@ -18,3 +18,51 @@ struct HourlyWeather: Hashable {
         self.temperture = temperture
     }
 }
+
+let dummyHourlyWeather: [HourlyWeather] = [
+    HourlyWeather(
+        time: "지금",
+        weatherCode: 3,
+        temperture: 21
+    ),
+    HourlyWeather(
+        time: "12시",
+        weatherCode: 3,
+        temperture: 22
+    ),
+    HourlyWeather(
+        time: "13시",
+        weatherCode: 3,
+        temperture: 23
+    ),
+    HourlyWeather(
+        time: "14시",
+        weatherCode: 3,
+        temperture: 23
+    ),
+    HourlyWeather(
+        time: "15시",
+        weatherCode: 3,
+        temperture: 23
+    ),
+    HourlyWeather(
+        time: "16시",
+        weatherCode: 3,
+        temperture: 22
+    ),
+    HourlyWeather(
+        time: "17시",
+        weatherCode: 3,
+        temperture: 21
+    ),
+    HourlyWeather(
+        time: "18시",
+        weatherCode: 3,
+        temperture: 21
+    ),
+    HourlyWeather(
+        time: "19시",
+        weatherCode: 3,
+        temperture: 20
+    )
+]

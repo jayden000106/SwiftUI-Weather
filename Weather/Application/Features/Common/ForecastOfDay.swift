@@ -9,10 +9,7 @@ import Charts
 import SwiftUI
 
 struct ForecastOfDay: View {
-    private let weekday: String
-    private let weatherCode: Int
-    private let minTemperture: Int
-    private let maxTemperture: Int
+    private let dailyWeather: DailyWeather
     private let minTempertureOfWeek: Int
     private let maxTempertureOfWeek: Int
     
@@ -21,31 +18,25 @@ struct ForecastOfDay: View {
     }
     
     init(
-        weekday: String,
-        weatherCode: Int,
-        minTemperture: Int,
-        maxTemperture: Int,
+        dailyWeather: DailyWeather,
         minTempertureOfWeek: Int,
         maxTempertureOfWeek: Int
     ) {
-        self.weekday = weekday
-        self.weatherCode = weatherCode
-        self.minTemperture = minTemperture
-        self.maxTemperture = maxTemperture
+        self.dailyWeather = dailyWeather
         self.minTempertureOfWeek = minTempertureOfWeek
         self.maxTempertureOfWeek = maxTempertureOfWeek
     }
     
     var body: some View {
         HStack {
-            Text(weekday)
+            Text(dailyWeather.weekday)
                 .foregroundStyle(Color.white)
             Spacer()
             Image(systemName: "cloud.fill")
                 .foregroundStyle(Color.white)
             Spacer()
             HStack(spacing: 8) {
-                Text("\(minTemperture)°")
+                Text("\(dailyWeather.minTemperture)°")
                     .foregroundStyle(Color.white.opacity(0.6))
                 
                 ZStack {
@@ -62,12 +53,12 @@ struct ForecastOfDay: View {
                             )
                         )
                         .frame(height: 2)
-                        .padding(.leading, CGFloat((minTemperture - minTempertureOfWeek)) * range)
-                        .padding(.trailing, CGFloat((maxTempertureOfWeek - maxTemperture)) * range)
+                        .padding(.leading, CGFloat((dailyWeather.minTemperture - minTempertureOfWeek)) * range)
+                        .padding(.trailing, CGFloat((maxTempertureOfWeek - dailyWeather.maxTemperture)) * range)
                 }
                 .frame(width: 80)
                 
-                Text("\(maxTemperture)°")
+                Text("\(dailyWeather.maxTemperture)°")
                     .foregroundStyle(Color.white)
             }
         }
@@ -77,12 +68,14 @@ struct ForecastOfDay: View {
 
 #Preview {
     ForecastOfDay(
-        weekday: "오늘",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 22,
+        dailyWeather: DailyWeather(
+            weekday: "오늘",
+            weatherCode: 3,
+            minTemperture: 12,
+            maxTemperture: 24
+        ),
         minTempertureOfWeek: 11,
-        maxTempertureOfWeek: 24
+        maxTempertureOfWeek: 25
     )
     .background(Color.black)
 }

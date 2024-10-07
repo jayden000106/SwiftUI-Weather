@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Divider: View {
+struct WeatherDivider: View {
     var body: some View {
         Rectangle()
             .fill(Color.tabBarDivier)
@@ -16,5 +16,5 @@ struct Divider: View {
 }
 
 #Preview {
-    Divider()
+    WeatherDivider()
 }

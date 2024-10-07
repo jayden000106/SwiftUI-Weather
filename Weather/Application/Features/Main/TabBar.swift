@@ -53,7 +53,7 @@ struct WeatherTabBar: View {
         .padding(.top, 16)
         .padding(.horizontal, 20)
         .overlay(alignment: .top) {
-            Divider()
+            WeatherDivider()
         }
     }
 }
