@@ -20,6 +20,7 @@
 		B9CD6D972CA15B6200B57F88 /* WeatherUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9CD6D962CA15B6200B57F88 /* WeatherUITestsLaunchTests.swift */; };
 		B9E8D6FC2CB3D3C500A779E6 /* ForecastOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E8D6FB2CB3D3C500A779E6 /* ForecastOfDay.swift */; };
 		B9E8D6FE2CB3D53400A779E6 /* Divider.swift in Sources */ = {isa = PBXBuildFile; fileRef = B9E8D6FD2CB3D53400A779E6 /* Divider.swift */; };
+		B9E8D7012CB3F23000A779E6 /* ComposableArchitecture in Frameworks */ = {isa = PBXBuildFile; productRef = B9E8D7002CB3F23000A779E6 /* ComposableArchitecture */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9E8D7012CB3F23000A779E6 /* ComposableArchitecture in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -161,6 +163,9 @@
 			dependencies = (
 			);
 			name = Weather;
+			packageProductDependencies = (
+				B9E8D7002CB3F23000A779E6 /* ComposableArchitecture */,
+			);
 			productName = Weather;
 			productReference = B9CD6D762CA15B6000B57F88 /* Weather.app */;
 			productType = "com.apple.product-type.application";
@@ -233,6 +238,9 @@
 				Base,
 			);
 			mainGroup = B9CD6D6D2CA15B6000B57F88;
+			packageReferences = (
+				B9E8D6FF2CB3F22F00A779E6 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+			);
 			productRefGroup = B9CD6D772CA15B6000B57F88 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -612,6 +620,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		B9E8D6FF2CB3F22F00A779E6 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
+			requirement = {
+				kind = upToNextMinorVersion;
+				minimumVersion = 1.15.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		B9E8D7002CB3F23000A779E6 /* ComposableArchitecture */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = B9E8D6FF2CB3F22F00A779E6 /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
+			productName = ComposableArchitecture;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = B9CD6D6E2CA15B6000B57F88 /* Project object */;
 }
