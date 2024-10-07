@@ -24,6 +24,7 @@ struct MainView: View {
         .overlay(alignment: .bottom) {
             WeatherTabBar(selected: $selectedTab, selections: tabs)
                 .padding(.bottom, 8)
+                .background(Color.tabBarBackground)
         }
         .background {
             Image("MainBackground")
