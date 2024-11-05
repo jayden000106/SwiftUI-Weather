@@ -190,10 +190,10 @@
 		B9E8D7022CB3F7CE00A779E6 /* Application */ = {
 			isa = PBXGroup;
 			children = (
-				B9E8D7052CB3F80800A779E6 /* Features */,
 				B9CD6D792CA15B6000B57F88 /* WeatherApp.swift */,
 				B982E4F92CD8B84F00BE806D /* AppView.swift */,
 				B982E4F72CD8B7E900BE806D /* AppReducer.swift */,
+				B9E8D7052CB3F80800A779E6 /* Features */,
 			);
 			path = Application;
 			sourceTree = "<group>";

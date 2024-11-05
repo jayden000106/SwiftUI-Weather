@@ -10,49 +10,53 @@ import SwiftUI
 struct LocationView: View {
     @Binding private var selectedItem: Item?
     
-    let animation: Namespace.ID
+    @State private var selection: Item
     
-    init(selectedItem: Binding<Item?>, animation: Namespace.ID) {
-        _selectedItem = selectedItem
+    private let initialItem: Item
+    private let animation: Namespace.ID
+    
+    init(selectedItem: Binding<Item?>, initialItem: Item, animation: Namespace.ID) {
+        self._selectedItem = selectedItem
+        self.initialItem = initialItem
         self.animation = animation
+        
+        selection = initialItem
     }
     
     var body: some View {
-        if let selectedItem = selectedItem {
-            TabView(selection: $selectedItem) {
-                ForEach(items) { item in
-                    VStack {
-                        Button {
-                            withAnimation {
-                                self.selectedItem = nil
-                            }
-                        } label: {
-                            Text("Exit")
-                                .foregroundColor(.white)
+        TabView(selection: $selection) {
+            ForEach(items) { item in
+                VStack {
+                    Button {
+                        withAnimation {
+                            selectedItem = nil
                         }
-                        .padding(.top, 60)
-                        
-                        Text(selectedItem.title)
-                            .foregroundColor(.white)
-                        
-                        Text(selectedItem.id.uuidString)
-                            .foregroundColor(.white)
-                        
-                        Spacer()
+                    } label: {
+                        Text("Exit")
+                            .foregroundColor(.red)
                     }
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .tag(item)
+                    .padding(.top, 60)
+                    
+                    Text(item.title)
+                        .foregroundColor(.white)
+                    
+                    Text(item.id.uuidString)
+                        .foregroundColor(.white)
+                    
+                    Spacer()
                 }
+                .frame(maxWidth: .infinity)
+                .background(Color.blue)
+                .tag(item)
             }
-            .tabViewStyle(.page)
-            .matchedGeometryEffect(id: selectedItem.id, in: animation)
-            .edgesIgnoringSafeArea(.all)
         }
+        .tabViewStyle(.page)
+        .matchedGeometryEffect(id: initialItem.id, in: animation)
+        .edgesIgnoringSafeArea(.all)
     }
 }
 
 #Preview {
     @Previewable @Namespace var animation
-    LocationView(selectedItem: .constant(items.first), animation: animation)
+    LocationView(selectedItem: .constant(items.first), initialItem: items.first!, animation: animation)
 }
