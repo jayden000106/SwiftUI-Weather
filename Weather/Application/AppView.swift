@@ -9,17 +9,14 @@ import SwiftUI
 
 struct AppView: View {
     @Namespace private var animation
-    @State private var selectedItem: Item? = nil
-
+    
+    @State private var selectedItem: Item? = items.first
+    
     var body: some View {
-        ZStack {
+        if let selectedItem = selectedItem {
+            LocationView(selectedItem: $selectedItem, initialItem: selectedItem, animation: animation)
+        } else {
             LocationListView(selectedItem: $selectedItem, animation: animation)
-                .opacity(selectedItem == nil ? 1 : 0)
-                .animation(.easeInOut, value: selectedItem)
-            
-            if selectedItem != nil {
-                LocationView(selectedItem: $selectedItem, animation: animation)
-            }
         }
     }
 }
@@ -50,7 +47,6 @@ let items = [
     Item(title: "아이템 1"),
     Item(title: "아이템 2"),
     Item(title: "아이템 3"),
-    // 추가 아이템...
 ]
 
 #Preview {

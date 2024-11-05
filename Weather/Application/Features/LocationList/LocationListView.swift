@@ -10,7 +10,7 @@ import SwiftUI
 struct LocationListView: View {
     @Binding private var selectedItem: Item?
     
-    let animation: Namespace.ID
+    private let animation: Namespace.ID
     
     init(selectedItem: Binding<Item?>, animation: Namespace.ID) {
         self._selectedItem = selectedItem
