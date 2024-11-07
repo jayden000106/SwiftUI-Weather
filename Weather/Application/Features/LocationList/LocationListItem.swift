@@ -42,8 +42,13 @@ struct LocationListItem: View {
         .padding(12)
         .foregroundStyle(Color.white)
         .background {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.blue)
+            GeometryReader { geometry in
+                Image("ListBackground")
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: geometry.size.width, height: geometry.size.height)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+            }
         }
     }
 }
