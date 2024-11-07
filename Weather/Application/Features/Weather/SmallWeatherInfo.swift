@@ -17,12 +17,13 @@ struct SmallWeatherInfo: View {
     var body: some View {
         VStack(spacing: 16) {
             Text(hourlyWeather.time)
-                .font(.body)
+                .font(.footnote)
             Image(systemName: "cloud.moon.fill")
                 .font(.title3)
             Text("\(hourlyWeather.temperture)°")
                 .font(.title3)
         }
+        .fontWeight(.semibold)
         .padding(12)
         .foregroundStyle(Color.font)
     }

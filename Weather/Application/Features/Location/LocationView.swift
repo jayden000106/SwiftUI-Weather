@@ -23,35 +23,31 @@ struct LocationView: View {
     }
     
     var body: some View {
-        TabView(selection: $selection) {
-            ForEach(dummyLocations) { location in
-                VStack {
-                    Button {
-                        withAnimation {
-                            selectedLocation = nil
-                        }
-                    } label: {
-                        Text("Exit")
-                            .foregroundColor(.red)
-                    }
-                    .padding(.top, 60)
-                    
-                    Text(location.name)
-                        .foregroundColor(.white)
-                    
-                    Text(location.id)
-                        .foregroundColor(.white)
-                    
-                    Spacer()
+        VStack(spacing: 0) {
+            TabView(selection: $selection) {
+                ForEach(dummyLocations) { location in
+                    WeatherView(location: location)
+                        .tag(location)
                 }
-                .frame(maxWidth: .infinity)
-                .background(Color.blue)
-                .tag(location)
             }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            
+            LocationTabBar(
+                selected: $selection,
+                selections: dummyLocations,
+                onTapList: {
+                    withAnimation {
+                        selectedLocation = nil
+                    }
+                }
+            )
         }
-        .tabViewStyle(.page)
         .matchedGeometryEffect(id: initialLocation.id, in: animation)
-        .edgesIgnoringSafeArea(.all)
+        .background {
+            Image("MainBackground")
+                .resizable()
+                .ignoresSafeArea()
+        }
     }
 }
 

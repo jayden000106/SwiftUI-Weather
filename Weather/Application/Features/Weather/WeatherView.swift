@@ -8,6 +8,12 @@
 import SwiftUI
 
 struct WeatherView: View {
+    private let location: Location
+    
+    init(location: Location) {
+        self.location = location
+    }
+    
     var body: some View {
         ScrollView {
             VStack(spacing: 8) {
@@ -15,23 +21,31 @@ struct WeatherView: View {
                 summary
                 forecastsOfDay
             }
+            .padding(.bottom)
         }
         .scrollIndicators(.hidden)
     }
-    
+}
+
+private extension WeatherView {
     var header: some View {
         VStack(spacing: 2) {
-            Text("Seongnam-si")
+            if let tag = location.tag {
+                Text(tag)
+                    .font(.caption)
+                    .foregroundStyle(Color.font)
+            }
+            Text(location.name)
                 .font(.largeTitle)
                 .foregroundStyle(Color.font)
             Text(" 21°")
                 .font(.system(size: 88, weight: .thin))
                 .foregroundStyle(Color.font)
                 .padding(.vertical, -12)
-            Text("Partly Cloudy")
+            Text("대체로 청명함")
                 .font(.title3)
-                .foregroundStyle(Color.font)
-            Text("H:29° L:15°")
+                .foregroundStyle(Color.white.opacity(0.4))
+            Text("최고:19° 최저:1°")
                 .font(.title3)
                 .foregroundStyle(Color.font)
         }
@@ -39,9 +53,9 @@ struct WeatherView: View {
     }
     
     var summary: some View {
-        VStack(spacing: 0) {
-            Text("Cloudy conditions from 1AM-9AM, with showers expected at 9AM.")
-                .font(.body)
+        VStack(alignment: .leading, spacing: 0) {
+            Text("오늘 밤 청명한 상태가 예상되며, 아침까지 이어지겠습니다.\n돌풍의 풍속은 최대 2m/s입니다.")
+                .font(.footnote)
                 .foregroundStyle(Color.font)
                 .padding(16)
             WeatherDivider()
@@ -95,5 +109,6 @@ struct WeatherView: View {
 }
 
 #Preview {
-    WeatherView()
+    WeatherView(location: dummyLocations.first!)
+        .background(Color.black.ignoresSafeArea())
 }
