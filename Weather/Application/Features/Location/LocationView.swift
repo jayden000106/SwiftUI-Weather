@@ -8,28 +8,27 @@
 import SwiftUI
 
 struct LocationView: View {
-    @Binding private var selectedItem: Item?
+    @Binding private var selectedLocation: Location?
     
-    @State private var selection: Item
+    @State private var selection: Location
     
-    private let initialItem: Item
     private let animation: Namespace.ID
+    private let initialLocation: Location
     
-    init(selectedItem: Binding<Item?>, initialItem: Item, animation: Namespace.ID) {
-        self._selectedItem = selectedItem
-        self.initialItem = initialItem
+    init(selectedLocation: Binding<Location?>, initialLocation: Location, animation: Namespace.ID) {
+        self._selectedLocation = selectedLocation
         self.animation = animation
-        
-        selection = initialItem
+        self.initialLocation = initialLocation
+        selection = initialLocation
     }
     
     var body: some View {
         TabView(selection: $selection) {
-            ForEach(items) { item in
+            ForEach(dummyLocations) { location in
                 VStack {
                     Button {
                         withAnimation {
-                            selectedItem = nil
+                            selectedLocation = nil
                         }
                     } label: {
                         Text("Exit")
@@ -37,26 +36,26 @@ struct LocationView: View {
                     }
                     .padding(.top, 60)
                     
-                    Text(item.title)
+                    Text(location.name)
                         .foregroundColor(.white)
                     
-                    Text(item.id.uuidString)
+                    Text(location.id)
                         .foregroundColor(.white)
                     
                     Spacer()
                 }
                 .frame(maxWidth: .infinity)
                 .background(Color.blue)
-                .tag(item)
+                .tag(location)
             }
         }
         .tabViewStyle(.page)
-        .matchedGeometryEffect(id: initialItem.id, in: animation)
+        .matchedGeometryEffect(id: initialLocation.id, in: animation)
         .edgesIgnoringSafeArea(.all)
     }
 }
 
 #Preview {
     @Previewable @Namespace var animation
-    LocationView(selectedItem: .constant(items.first), initialItem: items.first!, animation: animation)
+    LocationView(selectedLocation: .constant(dummyLocations.first!), initialLocation: dummyLocations.first!, animation: animation)
 }
