@@ -14,9 +14,7 @@ struct WeatherApp: App {
     var body: some Scene {
         WindowGroup {
             AppView(
-                store: Store(
-                    initialState: AppReducer.State(locationList: LocationListReducer.State())
-                ) {
+                store: Store(initialState: AppReducer.State(locationList: LocationListReducer.State())) {
                     AppReducer()
                 }
             )

@@ -22,10 +22,11 @@ struct LocationReducer {
     }
     
     var body: some Reducer<State, Action> {
-        
+        BindingReducer()
         Reduce { state, action in
             switch action {
             case .listTapped:
+                print("List Button Tapped")
                 return .none
             default:
                 return .none

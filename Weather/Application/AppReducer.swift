@@ -23,6 +23,9 @@ struct AppReducer {
     }
     
     var body: some Reducer<State, Action> {
+        Scope(state: \.locationList, action: \.locationList) {
+            LocationListReducer()
+        }
         Reduce { state, action in
             switch action {
             case .locationList(let action):

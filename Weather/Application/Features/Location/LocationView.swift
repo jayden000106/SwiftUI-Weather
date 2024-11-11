@@ -26,8 +26,7 @@ struct LocationView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             
             LocationTabBar(
-                selected: $store.selectedLocation,
-                selections: dummyLocations,
+                selected: store.selectedLocation,
                 onTapList: {
                     store.send(.listTapped)
                 }
@@ -44,5 +43,11 @@ struct LocationView: View {
 
 #Preview {
     @Previewable @Namespace var animation
-    LocationView(store: Store(initialState: LocationReducer.State(selectedLocation: dummyLocations.first!)) {LocationReducer()}, animation: animation, initialLocation: dummyLocations.first!)
+    LocationView(
+        store: Store(initialState: LocationReducer.State(selectedLocation: dummyLocations.first!)) {
+            LocationReducer()
+        },
+        animation: animation,
+        initialLocation: dummyLocations.first!
+    )
 }
