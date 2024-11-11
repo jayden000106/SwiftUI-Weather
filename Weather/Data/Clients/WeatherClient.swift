@@ -18,11 +18,12 @@ enum NetworkMethod: String {
 struct WeatherClient {
     static let apiKey = Bundle.main.infoDictionary?["APIKey"] as! String
     
-    static func request(
+    static func request<T: Codable>(
         url urlString: String,
         method httpMethod: NetworkMethod,
-        queryItems: [URLQueryItem]? = nil
-    ) async throws -> [Any] {
+        queryItems: [URLQueryItem]? = nil,
+        type: T.Type
+    ) async throws -> T {
         let url = URL(string: "https://api.tomorrow.io/v4/weather/\(urlString)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var defaultQueryItems: [URLQueryItem] = [URLQueryItem(name: "apikey", value: apiKey)]
@@ -42,7 +43,11 @@ struct WeatherClient {
         let (data, _) = try await URLSession.shared.data(for: request)
         print(String(decoding: data, as: UTF8.self))
         
-        return []
+        guard let result = try? JSONDecoder().decode(T.self, from: data) else {
+            throw NSError(domain: "WeatherClient", code: 1, userInfo: [:])
+        }
+        print(result)
+        return result
     }
     
     var requestLocationForecast: @Sendable (Location) async throws -> Void
@@ -59,19 +64,21 @@ extension DependencyValues {
 extension WeatherClient: DependencyKey {
     static let liveValue: WeatherClient = Self(
         requestLocationForecast: { location in
-            let query = "\(location.latitude), \(location.longitude)"
+//            let query = "\(location.latitude), \(location.longitude)"
             let _ = try await request(
                 url: "forecast",
                 method: .get,
-                queryItems: [URLQueryItem(name: "location", value: query)]
+                queryItems: [URLQueryItem(name: "location", value: "seoul")],
+                type: ForecastWeather.self
             )
         },
         requestLocationRealtimeWeather: { location in
-            let query = "\(location.latitude), \(location.longitude)"
-            let _ = try await request(
+//            let query = "\(location.latitude), \(location.longitude)"
+            let result = try await request(
                 url: "realtime",
                 method: .get,
-                queryItems: [URLQueryItem(name: "location", value: query)]
+                queryItems: [URLQueryItem(name: "location", value: "seoul")],
+                type: RealtimeWeather.self
             )
         }
     )
