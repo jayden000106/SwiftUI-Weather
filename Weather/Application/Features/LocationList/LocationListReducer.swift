@@ -19,7 +19,7 @@ struct LocationListReducer {
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
-        case forecastResponse(Result<Void, Error>)
+        case weatherResponse(Result<Void, Error>)
         case locationTapped(Location)
         case clearTapped
     }
@@ -30,16 +30,17 @@ struct LocationListReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .forecastResponse(.success):
+            case .weatherResponse(.success):
                 print("LocationListReducer: Success")
                 return .none
-            case .forecastResponse(.failure(let error)):
+            case .weatherResponse(.failure(let error)):
                 print("LocationListReducer: Failure \(error.localizedDescription)")
                 return .none
             case .onAppear:
                 return .run { send in
-                    await send(.forecastResponse(Result {
-                        try await weatherClient.requestLocationWeather(dummyLocations.first!)
+                    await send(.weatherResponse(Result {
+                        try await weatherClient.requestLocationForecast(dummyLocations.first!)
+                        try await weatherClient.requestLocationRealtimeWeather(dummyLocations.first!)
                     }))
                 }
             case .locationTapped(let location):
