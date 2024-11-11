@@ -1,8 +1,8 @@
 //
-//  LocationListReducer.swift
+//  LocationReducer.swift
 //  Weather
 //
-//  Created by 정지혁 on 11/5/24.
+//  Created by 정지혁 on 11/11/24.
 //
 
 import Foundation
@@ -10,27 +10,22 @@ import Foundation
 import ComposableArchitecture
 
 @Reducer
-struct LocationListReducer {
+struct LocationReducer {
     @ObservableState
     struct State {
-        var searchText = ""
+        var selectedLocation: Location
     }
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
-        case locationTapped(Location)
-        case clearTapped
+        case listTapped
     }
     
     var body: some Reducer<State, Action> {
-        BindingReducer()
+        
         Reduce { state, action in
             switch action {
-            case .locationTapped(let location):
-                print("LocationListReducer: \(location.id)")
-                return .none
-            case .clearTapped:
-                state.searchText = ""
+            case .listTapped:
                 return .none
             default:
                 return .none

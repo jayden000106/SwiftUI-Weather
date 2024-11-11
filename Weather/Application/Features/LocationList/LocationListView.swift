@@ -7,31 +7,23 @@
 
 import SwiftUI
 
+import ComposableArchitecture
+
 struct LocationListView: View {
-    @Binding private var selectedLocation: Location?
+    @Bindable var store: StoreOf<LocationListReducer>
     
-    @State private var searchText = ""
-    
-    private let animation: Namespace.ID
-    
-    init(selectedLocation: Binding<Location?>, animation: Namespace.ID) {
-        self._selectedLocation = selectedLocation
-        self.animation = animation
-    }
+    let animation: Namespace.ID
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
-                toolbar
-                header
-                searchBar
-                locationList
-                caption
-            }
-            .padding(16)
+        VStack(alignment: .leading, spacing: 12) {
+            toolbar
+            header
+            searchBar
+            locationList
+            caption
+            Spacer()
         }
-        .scrollIndicators(.hidden)
-        .scrollDisabled(true)
+        .padding(16)
     }
 }
 
@@ -58,10 +50,10 @@ private extension LocationListView {
     var searchBar: some View {
         HStack(spacing: 4) {
             Image(systemName: "magnifyingglass")
-            TextField("도시 또는 공항 검색", text: $searchText)
-            if !searchText.isEmpty {
+            TextField("도시 또는 공항 검색", text: $store.searchText)
+            if !store.searchText.isEmpty {
                 Button {
-                    searchText = ""
+                    store.send(.clearTapped)
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                 }
@@ -77,14 +69,12 @@ private extension LocationListView {
     }
     
     var locationList: some View {
-        VStack {
+        VStack(spacing: 8) {
             ForEach(dummyLocations) { location in
                 LocationListItem(location: location)
                     .matchedGeometryEffect(id: location.id, in: animation)
                     .onTapGesture {
-                        withAnimation {
-                            selectedLocation = location
-                        }
+                        store.send(.locationTapped(location))
                     }
             }
         }
@@ -116,5 +106,8 @@ private extension LocationListView {
 
 #Preview {
     @Previewable @Namespace var animation
-    LocationListView(selectedLocation: .constant(nil), animation: animation)
+    LocationListView(
+        store: Store(initialState: LocationListReducer.State()) { LocationListReducer() },
+        animation: animation
+    )
 }

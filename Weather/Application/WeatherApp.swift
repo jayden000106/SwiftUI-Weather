@@ -7,11 +7,19 @@
 
 import SwiftUI
 
+import ComposableArchitecture
+
 @main
 struct WeatherApp: App {
     var body: some Scene {
         WindowGroup {
-            AppView()
+            AppView(
+                store: Store(
+                    initialState: AppReducer.State(locationList: LocationListReducer.State())
+                ) {
+                    AppReducer()
+                }
+            )
         }
     }
 }
