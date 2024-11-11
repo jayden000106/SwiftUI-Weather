@@ -45,7 +45,8 @@ struct WeatherClient {
         return []
     }
     
-    var requestLocationWeather: @Sendable (Location) async throws -> Void
+    var requestLocationForecast: @Sendable (Location) async throws -> Void
+    var requestLocationRealtimeWeather: @Sendable (Location) async throws -> Void
 }
 
 extension DependencyValues {
@@ -57,10 +58,18 @@ extension DependencyValues {
 
 extension WeatherClient: DependencyKey {
     static let liveValue: WeatherClient = Self(
-        requestLocationWeather: { location in
+        requestLocationForecast: { location in
             let query = "\(location.latitude), \(location.longitude)"
             let _ = try await request(
                 url: "forecast",
+                method: .get,
+                queryItems: [URLQueryItem(name: "location", value: query)]
+            )
+        },
+        requestLocationRealtimeWeather: { location in
+            let query = "\(location.latitude), \(location.longitude)"
+            let _ = try await request(
+                url: "realtime",
                 method: .get,
                 queryItems: [URLQueryItem(name: "location", value: query)]
             )
