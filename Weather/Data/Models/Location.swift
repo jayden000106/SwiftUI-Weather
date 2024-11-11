@@ -15,6 +15,6 @@ struct Location: Identifiable, Hashable, Equatable {
 }
 
 let dummyLocations = [
-    Location(name: "서울", latitude: 134.2231, longitude: 53.4331, tag: "나의 위치"),
-    Location(name: "대전", latitude: 132.2231, longitude: 53.4331),
+    Location(name: "서울", latitude: 126.9779692, longitude: 37.566535, tag: "나의 위치"),
+    Location(name: "대전", latitude: 127.3845475, longitude: 36.3504119),
 ]
