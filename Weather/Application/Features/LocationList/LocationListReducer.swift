@@ -39,8 +39,8 @@ struct LocationListReducer {
             case .onAppear:
                 return .run { send in
                     await send(.weatherResponse(Result {
-                        try await weatherClient.requestLocationForecast(dummyLocations.first!)
-                        try await weatherClient.requestLocationRealtimeWeather(dummyLocations.first!)
+//                        try await weatherClient.requestLocationForecast(dummyLocations.first!)
+                        let _ = try await weatherClient.requestLocationRealtimeWeather(dummyLocations.first!)
                     }))
                 }
             case .locationTapped(let location):
