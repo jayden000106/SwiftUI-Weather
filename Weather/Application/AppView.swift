@@ -7,20 +7,35 @@
 
 import SwiftUI
 
+import ComposableArchitecture
+
 struct AppView: View {
+    @Bindable var store: StoreOf<AppReducer>
+    
     @Namespace private var animation
     
-    @State private var selectedLocation: Location? = dummyLocations.first
-    
     var body: some View {
-        if let selectedLocation = selectedLocation {
-            LocationView(selectedLocation: $selectedLocation, initialLocation: selectedLocation, animation: animation)
+        if let locationStore = store.scope(state: \.location, action: \.location) {
+            LocationView(
+                store: locationStore,
+                animation: animation,
+                initialLocation: locationStore.selectedLocation
+            )
         } else {
-            LocationListView(selectedLocation: $selectedLocation, animation: animation)
+            LocationListView(
+                store: store.scope(state: \.locationList, action: \.locationList),
+                animation: animation
+            )
         }
     }
 }
 
 #Preview {
-    AppView()
+    AppView(
+        store: Store(
+            initialState: AppReducer.State(locationList: LocationListReducer.State())
+        ) {
+            AppReducer()
+        }
+    )
 }

@@ -7,24 +7,17 @@
 
 import SwiftUI
 
+import ComposableArchitecture
+
 struct LocationView: View {
-    @Binding private var selectedLocation: Location?
+    @Bindable var store: StoreOf<LocationReducer>
     
-    @State private var selection: Location
-    
-    private let animation: Namespace.ID
-    private let initialLocation: Location
-    
-    init(selectedLocation: Binding<Location?>, initialLocation: Location, animation: Namespace.ID) {
-        self._selectedLocation = selectedLocation
-        self.animation = animation
-        self.initialLocation = initialLocation
-        selection = initialLocation
-    }
+    let animation: Namespace.ID
+    let initialLocation: Location
     
     var body: some View {
         VStack(spacing: 0) {
-            TabView(selection: $selection) {
+            TabView(selection: $store.selectedLocation) {
                 ForEach(dummyLocations) { location in
                     WeatherView(location: location)
                         .tag(location)
@@ -33,12 +26,10 @@ struct LocationView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             
             LocationTabBar(
-                selected: $selection,
+                selected: $store.selectedLocation,
                 selections: dummyLocations,
                 onTapList: {
-                    withAnimation {
-                        selectedLocation = nil
-                    }
+                    store.send(.listTapped)
                 }
             )
         }
@@ -53,5 +44,5 @@ struct LocationView: View {
 
 #Preview {
     @Previewable @Namespace var animation
-    LocationView(selectedLocation: .constant(dummyLocations.first!), initialLocation: dummyLocations.first!, animation: animation)
+    LocationView(store: Store(initialState: LocationReducer.State(selectedLocation: dummyLocations.first!)) {LocationReducer()}, animation: animation, initialLocation: dummyLocations.first!)
 }
