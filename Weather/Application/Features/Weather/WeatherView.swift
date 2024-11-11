@@ -24,6 +24,7 @@ struct WeatherView: View {
             .padding(.bottom)
         }
         .scrollIndicators(.hidden)
+        .edgesIgnoringSafeArea(.top)
     }
 }
 
