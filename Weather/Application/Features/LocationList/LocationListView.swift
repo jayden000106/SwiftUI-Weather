@@ -24,6 +24,9 @@ struct LocationListView: View {
             Spacer()
         }
         .padding(16)
+        .onAppear {
+            store.send(.onAppear)
+        }
     }
 }
 
