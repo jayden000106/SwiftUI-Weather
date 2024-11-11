@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		B91BFA522CAAE9250041C995 /* LocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BFA512CAAE9250041C995 /* LocationView.swift */; };
 		B91BFA542CAAEDF50041C995 /* SmallWeatherInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = B91BFA532CAAEDF50041C995 /* SmallWeatherInfo.swift */; };
+		B9415CFA2CE1F57B001C6029 /* WeatherKey.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = B9415CF92CE1F57B001C6029 /* WeatherKey.xcconfig */; };
 		B982E4F82CD8B7EF00BE806D /* AppReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = B982E4F72CD8B7E900BE806D /* AppReducer.swift */; };
 		B982E4FA2CD8B84F00BE806D /* AppView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B982E4F92CD8B84F00BE806D /* AppView.swift */; };
 		B982E4FF2CD99FEE00BE806D /* Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = B982E4FE2CD99FEA00BE806D /* Location.swift */; };
@@ -51,6 +52,8 @@
 /* Begin PBXFileReference section */
 		B91BFA512CAAE9250041C995 /* LocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationView.swift; sourceTree = "<group>"; };
 		B91BFA532CAAEDF50041C995 /* SmallWeatherInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmallWeatherInfo.swift; sourceTree = "<group>"; };
+		B9415CF92CE1F57B001C6029 /* WeatherKey.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = WeatherKey.xcconfig; sourceTree = "<group>"; };
+		B9415CFB2CE1F5BE001C6029 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		B982E4F72CD8B7E900BE806D /* AppReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppReducer.swift; sourceTree = "<group>"; };
 		B982E4F92CD8B84F00BE806D /* AppView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppView.swift; sourceTree = "<group>"; };
 		B982E4FE2CD99FEA00BE806D /* Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Location.swift; sourceTree = "<group>"; };
@@ -142,6 +145,7 @@
 		B9CD6D6D2CA15B6000B57F88 = {
 			isa = PBXGroup;
 			children = (
+				B9415CF92CE1F57B001C6029 /* WeatherKey.xcconfig */,
 				B9CD6D782CA15B6000B57F88 /* Weather */,
 				B9CD6D892CA15B6200B57F88 /* WeatherTests */,
 				B9CD6D932CA15B6200B57F88 /* WeatherUITests */,
@@ -162,6 +166,7 @@
 		B9CD6D782CA15B6000B57F88 /* Weather */ = {
 			isa = PBXGroup;
 			children = (
+				B9415CFB2CE1F5BE001C6029 /* Info.plist */,
 				B9E8D7022CB3F7CE00A779E6 /* Application */,
 				B9E8D7032CB3F7DF00A779E6 /* Data */,
 				B9E8D7042CB3F7E800A779E6 /* Resources */,
@@ -361,6 +366,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B9415CFA2CE1F57B001C6029 /* WeatherKey.xcconfig in Resources */,
 				B9CD6D812CA15B6100B57F88 /* Preview Assets.xcassets in Resources */,
 				B9CD6D7E2CA15B6100B57F88 /* Assets.xcassets in Resources */,
 			);
@@ -441,6 +447,7 @@
 /* Begin XCBuildConfiguration section */
 		B9CD6D982CA15B6200B57F88 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B9415CF92CE1F57B001C6029 /* WeatherKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -504,6 +511,7 @@
 		};
 		B9CD6D992CA15B6200B57F88 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = B9415CF92CE1F57B001C6029 /* WeatherKey.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -569,11 +577,13 @@
 				DEVELOPMENT_TEAM = 3PFDRPLY6N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Weather/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -598,11 +608,13 @@
 				DEVELOPMENT_TEAM = 3PFDRPLY6N;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Weather/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -734,8 +746,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pointfreeco/swift-composable-architecture.git";
 			requirement = {
-				kind = upToNextMinorVersion;
-				minimumVersion = 1.15.0;
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
