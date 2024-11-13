@@ -34,7 +34,7 @@ struct LocationListItem: View {
             HStack {
                 Text(location.realtimeWeather?.weatherText ?? "")
                 Spacer()
-                Text("최고: 13° 최저: 0°")
+                Text("최고: \(Int(location.dailyWeatherIntervals?.first?.values.temperatureMax ?? 20))° 최저: \(Int(location.dailyWeatherIntervals?.first?.values.temperatureMin ?? 0))°")
             }
             .font(.caption2)
             .foregroundStyle(Color.white.opacity(0.8))

@@ -46,7 +46,7 @@ private extension WeatherView {
             Text(location.realtimeWeather?.weatherText ?? "")
                 .font(.title3)
                 .foregroundStyle(Color.white.opacity(0.4))
-            Text("최고:19° 최저:1°")
+            Text("최고:\(Int(location.dailyWeatherIntervals?.first?.values.temperatureMax ?? 20))° 최저:\(Int(location.dailyWeatherIntervals?.first?.values.temperatureMin ?? 0))°")
                 .font(.title3)
                 .foregroundStyle(Color.font)
         }
@@ -92,13 +92,14 @@ private extension WeatherView {
             .foregroundStyle(Color.white.opacity(0.4))
             .padding(.bottom, 4)
             
-            ForEach(dummyDailyWeather, id: \.self) { dailyWeather in
+            ForEach(location.dailyWeatherIntervals ?? [], id: \.self) { interval in
                 VStack(spacing: 4) {
                     WeatherDivider()
                     ForecastOfDay(
-                        dailyWeather: dailyWeather,
-                        minTempertureOfWeek: dummyDailyWeather.map { $0.minTemperture }.min() ?? 0,
-                        maxTempertureOfWeek: dummyDailyWeather.map { $0.maxTemperture }.max() ?? 100
+                        isFirst: interval == location.dailyWeatherIntervals?.first,
+                        dailyWeatherInterval: interval,
+                        maxTempertureOfWeek: location.maxTempertureOfWeek,
+                        minTempertureOfWeek: location.minTempertureOfWeek
                     )
                 }
             }

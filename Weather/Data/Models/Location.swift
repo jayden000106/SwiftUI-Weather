@@ -15,11 +15,20 @@ struct Location: Identifiable, Hashable, Equatable {
     
     var realtimeWeather: RealtimeWeather?
     var hourlyWeatherIntervals: [HourlyWeatherInterval]?
+    var dailyWeatherIntervals: [DailyWeatherInterval]?
+    
+    var maxTempertureOfWeek: Double {
+        return dailyWeatherIntervals?.map { $0.values.temperatureMax }.max() ?? 20
+    }
+    var minTempertureOfWeek: Double {
+        return dailyWeatherIntervals?.map { $0.values.temperatureMin }.min() ?? 0
+    }
 }
 
 struct LocationWeatherData {
     let realtimeWeather: RealtimeWeather
     let hourlyWeatherIntervals: [HourlyWeatherInterval]
+    let dailyWeatherIntervals: [DailyWeatherInterval]
 }
 
 let dummyLocations = [
