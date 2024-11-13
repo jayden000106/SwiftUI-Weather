@@ -63,8 +63,11 @@ private extension WeatherView {
                 .padding(.horizontal, 16)
             ScrollView(.horizontal) {
                 HStack {
-                    ForEach(dummyHourlyWeather, id: \.self) { hourlyWeather in
-                        SmallWeatherInfo(hourlyWeather: hourlyWeather)
+                    ForEach(location.hourlyWeatherIntervals ?? [], id: \.self) { interval in
+                        SmallWeatherInfo(
+                            isFirst: interval == location.hourlyWeatherIntervals?.first,
+                            hourlyWeatherInterval: interval
+                        )
                     }
                 }
                 .padding(.horizontal, 16)

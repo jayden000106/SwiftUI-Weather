@@ -22,9 +22,10 @@ struct WeatherClient {
         url urlString: String,
         method httpMethod: NetworkMethod,
         queryItems: [URLQueryItem]? = nil,
+        parameters: [String: Any?]? = nil,
         type: T.Type
     ) async throws -> T {
-        let url = URL(string: "https://api.tomorrow.io/v4/weather/\(urlString)")!
+        let url = URL(string: "https://api.tomorrow.io/v4/\(urlString)")!
         var components = URLComponents(url: url, resolvingAgainstBaseURL: true)!
         var defaultQueryItems: [URLQueryItem] = [URLQueryItem(name: "apikey", value: apiKey)]
         
@@ -35,10 +36,18 @@ struct WeatherClient {
         components.queryItems = components.queryItems.map { $0 + defaultQueryItems } ?? defaultQueryItems
         
         var request = URLRequest(url: components.url!)
-        print("URL: \(components.url!)")
         request.httpMethod = httpMethod.rawValue
         request.timeoutInterval = 10
-        request.allHTTPHeaderFields = ["Content-Type": "application/json"]
+        if httpMethod == .get {
+            request.allHTTPHeaderFields = ["Content-Type": "application/json"]
+        } else if httpMethod == .post {
+            request.allHTTPHeaderFields = ["accept": "application/json", "Accept-Encoding": "gzip", "content-type": "application/json"]
+            
+            if let parameters {
+                let postData = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                request.httpBody = postData
+            }
+        }
         
         let (data, _) = try await URLSession.shared.data(for: request)
         print(String(decoding: data, as: UTF8.self))
@@ -46,11 +55,11 @@ struct WeatherClient {
         guard let result = try? JSONDecoder().decode(T.self, from: data) else {
             throw NSError(domain: "WeatherClient", code: 1, userInfo: [:])
         }
-        print(result)
         return result
     }
     
-    var requestLocationForecast: @Sendable (Location) async throws -> Void
+    var requestLocationHourlyTimelines: @Sendable (Location) async throws -> HourlyWeatherDTO
+    var requestLocationDailyTimelines: @Sendable (Location) async throws -> Void
     var requestLocationRealtime: @Sendable (Location) async throws -> RealtimeWeatherDTO
 }
 
@@ -63,20 +72,34 @@ extension DependencyValues {
 
 extension WeatherClient: DependencyKey {
     static let liveValue: WeatherClient = Self(
-        requestLocationForecast: { location in
-            let query = "\(location.latitude), \(location.longitude)"
-            let _ = try await request(
-                url: "forecast",
-                method: .get,
-                queryItems: [URLQueryItem(name: "location", value: query)],
-                type: ForecastWeather.self
-            )
-        }, requestLocationRealtime: { location in
-            let query = "\(location.latitude), \(location.longitude)"
+        requestLocationHourlyTimelines: { location in
+            let geoPoint = "\(location.latitude), \(location.longitude)"
             let result = try await request(
-                url: "realtime",
+                url: "timelines",
+                method: .post,
+                parameters: [
+                    "location": geoPoint,
+                    "fields": ["temperature", "weatherCode"],
+                    "units": "metric",
+                    "timesteps": ["1h"],
+                    "startTime": "now",
+                    "endTime": "nowPlus24h"
+                ],
+                type: HourlyWeatherDTO.self
+            )
+            return result
+        }, requestLocationDailyTimelines: { location in
+            let query = "\(location.latitude), \(location.longitude)"
+            
+            
+        }, requestLocationRealtime: { location in
+            let geoPoint = "\(location.latitude), \(location.longitude)"
+            let result = try await request(
+                url: "weather/realtime",
                 method: .get,
-                queryItems: [URLQueryItem(name: "location", value: query)],
+                queryItems: [
+                    URLQueryItem(name: "location", value: geoPoint)
+                ],
                 type: RealtimeWeatherDTO.self
             )
             return result
@@ -84,7 +107,47 @@ extension WeatherClient: DependencyKey {
     )
     
     static let previewValue: WeatherClient = Self(
-        requestLocationForecast: { location in
+        requestLocationHourlyTimelines: { location in
+            try await Task.sleep(for: .seconds(1))
+            return HourlyWeatherDTO(
+                data: HourlyWeatherData(
+                    timelines: [
+                        HourlyWeatherTimeLine(
+                            timestep: "1h", intervals: [
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T17:00:00Z",
+                                    values: HourlyWeather(temperature: 5.54, weatherCode: 1000)
+                                ),
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T18:00:00Z",
+                                    values: HourlyWeather(temperature: 6.24, weatherCode: 1000)
+                                ),
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T19:00:00Z",
+                                    values: HourlyWeather(temperature: 6.44, weatherCode: 1000)
+                                ),
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T20:00:00Z",
+                                    values: HourlyWeather(temperature: 6.19, weatherCode: 1000)
+                                ),
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T21:00:00Z",
+                                    values: HourlyWeather(temperature: 5.26, weatherCode: 1000)
+                                ),
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T22:00:00Z",
+                                    values: HourlyWeather(temperature: 3.42, weatherCode: 1000)
+                                ),
+                                HourlyWeatherInterval(
+                                    startTime: "2024-11-13T23:00:00Z",
+                                    values: HourlyWeather(temperature: 2.38, weatherCode: 1000)
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
+        }, requestLocationDailyTimelines: { location in
             try await Task.sleep(for: .seconds(1))
         }, requestLocationRealtime: { location in
             try await Task.sleep(for: .seconds(1))

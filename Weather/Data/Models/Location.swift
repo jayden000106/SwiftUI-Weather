@@ -14,9 +14,15 @@ struct Location: Identifiable, Hashable, Equatable {
     var tag: String?
     
     var realtimeWeather: RealtimeWeather?
+    var hourlyWeatherIntervals: [HourlyWeatherInterval]?
 }
 
-var dummyLocations = [
+struct LocationWeatherData {
+    let realtimeWeather: RealtimeWeather
+    let hourlyWeatherIntervals: [HourlyWeatherInterval]
+}
+
+let dummyLocations = [
     Location(name: "서울", latitude: 37.566535, longitude: 126.9779692, tag: "나의 위치"),
     Location(name: "대전", latitude: 36.3504119, longitude: 127.3845475),
 ]

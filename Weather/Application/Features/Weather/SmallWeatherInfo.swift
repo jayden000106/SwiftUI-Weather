@@ -8,19 +8,23 @@
 import SwiftUI
 
 struct SmallWeatherInfo: View {
-    private let hourlyWeather: HourlyWeather
+    private let isFirst: Bool
+    private let hourlyWeatherInterval: HourlyWeatherInterval
     
-    init(hourlyWeather: HourlyWeather) {
-        self.hourlyWeather = hourlyWeather
+    init(isFirst: Bool, hourlyWeatherInterval: HourlyWeatherInterval) {
+        self.isFirst = isFirst
+        self.hourlyWeatherInterval = hourlyWeatherInterval
     }
     
     var body: some View {
         VStack(spacing: 16) {
-            Text(hourlyWeather.time)
+            Text(isFirst ? "지금" : "\(hourlyWeatherInterval.hour)시")
                 .font(.footnote)
-            Image(systemName: "cloud.moon.fill")
+            Image(systemName: hourlyWeatherInterval.weatherIconText)
+                .symbolRenderingMode(.multicolor)
                 .font(.title3)
-            Text("\(hourlyWeather.temperture)°")
+                .frame(width: 16, height: 16)
+            Text("\(Int(hourlyWeatherInterval.values.temperature))°")
                 .font(.title3)
         }
         .fontWeight(.semibold)
@@ -30,12 +34,21 @@ struct SmallWeatherInfo: View {
 }
 
 #Preview {
-    SmallWeatherInfo(
-        hourlyWeather: HourlyWeather(
-            time: "Now",
-            weatherCode: 2,
-            temperture: 21
+    VStack {
+        SmallWeatherInfo(
+            isFirst: true,
+            hourlyWeatherInterval: HourlyWeatherInterval(
+                startTime: "2024-11-13T16:00:00Z",
+                values: HourlyWeather(temperature: 12, weatherCode: 1000)
+            )
         )
-    )
+        SmallWeatherInfo(
+            isFirst: false,
+            hourlyWeatherInterval: HourlyWeatherInterval(
+                startTime: "2024-11-13T17:00:00Z",
+                values: HourlyWeather(temperature: 14, weatherCode: 1100)
+            )
+        )
+    }
     .background { Color.black }
 }
