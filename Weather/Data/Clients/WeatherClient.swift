@@ -71,53 +71,55 @@ extension DependencyValues {
 }
 
 extension WeatherClient: DependencyKey {
-//    static let liveValue: WeatherClient = Self(
-//        requestLocationHourlyTimelines: { location in
-//            let geoPoint = "\(location.latitude), \(location.longitude)"
-//            let result = try await request(
-//                url: "timelines",
-//                method: .post,
-//                parameters: [
-//                    "location": geoPoint,
-//                    "fields": ["temperature", "weatherCode"],
-//                    "units": "metric",
-//                    "timesteps": ["1h"],
-//                    "startTime": "now",
-//                    "endTime": "nowPlus24h"
-//                ],
-//                type: HourlyWeatherDTO.self
-//            )
-//            return result
-//        }, requestLocationDailyTimelines: { location in
-//            let geoPoint = "\(location.latitude), \(location.longitude)"
-//            let result = try await request(
-//                url: "timelines",
-//                method: .post,
-//                parameters: [
-//                    "location": geoPoint,
-//                    "fields": ["temperatureMax", "temperatureMin", "weatherCode"],
-//                    "units": "metric",
-//                    "timesteps": ["1d"],
-//                    "startTime": "now",
-//                    "endTime": "nowPlus5d"
-//                ],
-//                type: DailyWeatherDTO.self
-//            )
-//            return result
-//        }, requestLocationRealtime: { location in
-//            let geoPoint = "\(location.latitude), \(location.longitude)"
-//            let result = try await request(
-//                url: "weather/realtime",
-//                method: .get,
-//                queryItems: [
-//                    URLQueryItem(name: "location", value: geoPoint)
-//                ],
-//                type: RealtimeWeatherDTO.self
-//            )
-//            return result
-//        }
-//    )
-    static let liveValue: WeatherClient = Self.previewValue
+    static let liveValue: WeatherClient = Self(
+        requestLocationHourlyTimelines: { location in
+            let geoPoint = "\(location.latitude), \(location.longitude)"
+            let result = try await request(
+                url: "timelines",
+                method: .post,
+                parameters: [
+                    "location": geoPoint,
+                    "fields": ["temperature", "weatherCode"],
+                    "units": "metric",
+                    "timesteps": ["1h"],
+                    "startTime": "now",
+                    "endTime": "nowPlus24h",
+                    "timezone": "auto"
+                ],
+                type: HourlyWeatherDTO.self
+            )
+            return result
+        }, requestLocationDailyTimelines: { location in
+            let geoPoint = "\(location.latitude), \(location.longitude)"
+            let result = try await request(
+                url: "timelines",
+                method: .post,
+                parameters: [
+                    "location": geoPoint,
+                    "fields": ["temperatureMax", "temperatureMin", "weatherCode"],
+                    "units": "metric",
+                    "timesteps": ["1d"],
+                    "startTime": "now",
+                    "endTime": "nowPlus5d",
+                    "timezone": "auto"
+                ],
+                type: DailyWeatherDTO.self
+            )
+            return result
+        }, requestLocationRealtime: { location in
+            let geoPoint = "\(location.latitude), \(location.longitude)"
+            let result = try await request(
+                url: "weather/realtime",
+                method: .get,
+                queryItems: [
+                    URLQueryItem(name: "location", value: geoPoint)
+                ],
+                type: RealtimeWeatherDTO.self
+            )
+            return result
+        }
+    )
+//    static let liveValue: WeatherClient = Self.previewValue
     
     static let previewValue: WeatherClient = Self(
         requestLocationHourlyTimelines: { location in
@@ -128,31 +130,31 @@ extension WeatherClient: DependencyKey {
                         HourlyWeatherTimeLine(
                             timestep: "1h", intervals: [
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T17:00:00Z",
+                                    startTime: "2024-11-13T14:00:00-05:00",
                                     values: HourlyWeather(temperature: 5.54, weatherCode: 1000)
                                 ),
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T18:00:00Z",
+                                    startTime: "2024-11-13T15:00:00-05:00",
                                     values: HourlyWeather(temperature: 6.24, weatherCode: 1000)
                                 ),
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T19:00:00Z",
+                                    startTime: "2024-11-13T16:00:00-05:00",
                                     values: HourlyWeather(temperature: 6.44, weatherCode: 1000)
                                 ),
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T20:00:00Z",
+                                    startTime: "2024-11-13T17:00:00-05:00",
                                     values: HourlyWeather(temperature: 6.19, weatherCode: 1000)
                                 ),
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T21:00:00Z",
+                                    startTime: "2024-11-13T18:00:00-05:00",
                                     values: HourlyWeather(temperature: 5.26, weatherCode: 1000)
                                 ),
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T22:00:00Z",
+                                    startTime: "2024-11-13T19:00:00-05:00",
                                     values: HourlyWeather(temperature: 3.42, weatherCode: 1000)
                                 ),
                                 HourlyWeatherInterval(
-                                    startTime: "2024-11-13T23:00:00Z",
+                                    startTime: "2024-11-13T20:00:00-05:00",
                                     values: HourlyWeather(temperature: 2.38, weatherCode: 1000)
                                 )
                             ]
@@ -169,27 +171,27 @@ extension WeatherClient: DependencyKey {
                             timestep: "1d",
                             intervals: [
                                 DailyWeatherInterval(
-                                    startTime: "2024-11-13T11:00:00Z",
+                                    startTime: "2024-11-13T06:00:00-05:00",
                                     values: DailyWeather(temperatureMin: -2.07, temperatureMax: 6.81, weatherCode: 1000)
                                 ),
                                 DailyWeatherInterval(
-                                    startTime: "2024-11-14T11:00:00Z",
+                                    startTime: "2024-11-14T06:00:00-05:00",
                                     values: DailyWeather(temperatureMin: -4.3, temperatureMax: 6.44, weatherCode: 1001)
                                 ),
                                 DailyWeatherInterval(
-                                    startTime: "2024-11-15T11:00:00Z",
+                                    startTime: "2024-11-15T06:00:00-05:00",
                                     values: DailyWeather(temperatureMin: -4.32, temperatureMax: 11.67, weatherCode: 1001)
                                 ),
                                 DailyWeatherInterval(
-                                    startTime: "2024-11-16T11:00:00Z",
+                                    startTime: "2024-11-16T06:00:00-05:00",
                                     values: DailyWeather(temperatureMin: 7.15, temperatureMax: 13.1, weatherCode: 1000)
                                 ),
                                 DailyWeatherInterval(
-                                    startTime: "2024-11-17T11:00:00Z",
+                                    startTime: "2024-11-17T06:00:00-05:00",
                                     values: DailyWeather(temperatureMin: 7.39, temperatureMax: 13.97, weatherCode: 1001)
                                 ),
                                 DailyWeatherInterval(
-                                    startTime: "2024-11-18T11:00:00Z",
+                                    startTime: "2024-11-18T06:00:00-05:00",
                                     values: DailyWeather(temperatureMin: 8.76, temperatureMax: 14.31, weatherCode: 1001)
                                 )
                             ]
