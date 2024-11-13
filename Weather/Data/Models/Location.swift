@@ -12,9 +12,11 @@ struct Location: Identifiable, Hashable, Equatable {
     var latitude: Double
     var longitude: Double
     var tag: String?
+    
+    var realtimeWeather: RealtimeWeather?
 }
 
-let dummyLocations = [
-    Location(name: "서울", latitude: 126.9779692, longitude: 37.566535, tag: "나의 위치"),
-    Location(name: "대전", latitude: 127.3845475, longitude: 36.3504119),
+var dummyLocations = [
+    Location(name: "서울", latitude: 37.566535, longitude: 126.9779692, tag: "나의 위치"),
+    Location(name: "대전", latitude: 36.3504119, longitude: 127.3845475),
 ]

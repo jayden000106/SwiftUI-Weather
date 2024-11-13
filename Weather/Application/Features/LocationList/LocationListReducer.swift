@@ -14,12 +14,16 @@ struct LocationListReducer {
     @ObservableState
     struct State {
         var searchText = ""
+        var locations = [
+            Location(name: "서울", latitude: 37.566535, longitude: 126.9779692, tag: "나의 위치"),
+            Location(name: "대전", latitude: 36.3504119, longitude: 127.3845475)
+        ]
     }
     
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
-        case weatherResponse(Result<Void, Error>)
+        case weatherResponse(Result<[RealtimeWeather], Error>)
         case locationTapped(Location)
         case clearTapped
     }
@@ -30,17 +34,25 @@ struct LocationListReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .weatherResponse(.success):
+            case .weatherResponse(.success(let realtimeWeathers)):
                 print("LocationListReducer: Success")
+                for index in realtimeWeathers.indices {
+                    state.locations[index].realtimeWeather = realtimeWeathers[index]
+                }
                 return .none
             case .weatherResponse(.failure(let error)):
                 print("LocationListReducer: Failure \(error.localizedDescription)")
                 return .none
             case .onAppear:
+                let locations = state.locations
                 return .run { send in
                     await send(.weatherResponse(Result {
-//                        try await weatherClient.requestLocationForecast(dummyLocations.first!)
-                        let _ = try await weatherClient.requestLocationRealtimeWeather(dummyLocations.first!)
+                        var result: [RealtimeWeather] = []
+                        for location in locations {
+                            let realtimeWeatherDTO = try await weatherClient.requestLocationRealtime(location)
+                            result.append(realtimeWeatherDTO.data.values)
+                        }
+                        return result
                     }))
                 }
             case .locationTapped(let location):

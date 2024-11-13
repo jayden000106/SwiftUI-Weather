@@ -18,7 +18,7 @@ struct LocationView: View {
     var body: some View {
         VStack(spacing: 0) {
             TabView(selection: $store.selectedLocation) {
-                ForEach(dummyLocations) { location in
+                ForEach(store.locations) { location in
                     WeatherView(location: location)
                         .tag(location)
                 }
@@ -27,6 +27,7 @@ struct LocationView: View {
             
             LocationTabBar(
                 selected: store.selectedLocation,
+                selections: store.locations,
                 onTapList: {
                     store.send(.listTapped)
                 }
@@ -44,7 +45,12 @@ struct LocationView: View {
 #Preview {
     @Previewable @Namespace var animation
     LocationView(
-        store: Store(initialState: LocationReducer.State(selectedLocation: dummyLocations.first!)) {
+        store: Store(
+            initialState: LocationReducer.State(
+                selectedLocation: dummyLocations.first!,
+                locations: dummyLocations
+            )
+        ) {
             LocationReducer()
         },
         animation: animation,

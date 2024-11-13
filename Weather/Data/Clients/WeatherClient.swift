@@ -51,7 +51,7 @@ struct WeatherClient {
     }
     
     var requestLocationForecast: @Sendable (Location) async throws -> Void
-    var requestLocationRealtimeWeather: @Sendable (Location) async throws -> Void
+    var requestLocationRealtime: @Sendable (Location) async throws -> RealtimeWeatherDTO
 }
 
 extension DependencyValues {
@@ -64,21 +64,34 @@ extension DependencyValues {
 extension WeatherClient: DependencyKey {
     static let liveValue: WeatherClient = Self(
         requestLocationForecast: { location in
-//            let query = "\(location.latitude), \(location.longitude)"
+            let query = "\(location.latitude), \(location.longitude)"
             let _ = try await request(
                 url: "forecast",
                 method: .get,
-                queryItems: [URLQueryItem(name: "location", value: "seoul")],
+                queryItems: [URLQueryItem(name: "location", value: query)],
                 type: ForecastWeather.self
             )
-        },
-        requestLocationRealtimeWeather: { location in
-//            let query = "\(location.latitude), \(location.longitude)"
+        }, requestLocationRealtime: { location in
+            let query = "\(location.latitude), \(location.longitude)"
             let result = try await request(
                 url: "realtime",
                 method: .get,
-                queryItems: [URLQueryItem(name: "location", value: "seoul")],
-                type: RealtimeWeather.self
+                queryItems: [URLQueryItem(name: "location", value: query)],
+                type: RealtimeWeatherDTO.self
+            )
+            return result
+        }
+    )
+    
+    static let previewValue: WeatherClient = Self(
+        requestLocationForecast: { location in
+            try await Task.sleep(for: .seconds(1))
+        }, requestLocationRealtime: { location in
+            try await Task.sleep(for: .seconds(1))
+            return RealtimeWeatherDTO(
+                data: RealtimeWeatherData(
+                    values: RealtimeWeather(humidity: 85, temperature: 11)
+                )
             )
         }
     )

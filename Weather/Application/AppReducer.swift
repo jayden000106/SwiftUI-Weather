@@ -33,7 +33,10 @@ struct AppReducer {
                 case .locationTapped(let location):
                     print("AppReducer: \(location.id)")
                     withAnimation(.easeInOut(duration: 0.5)) {
-                        state.location = LocationReducer.State(selectedLocation: location)
+                        state.location = LocationReducer.State(
+                            selectedLocation: location,
+                            locations: state.locationList.locations
+                        )
                     }
                     return .none
                 default:

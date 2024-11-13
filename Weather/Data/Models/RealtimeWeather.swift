@@ -7,14 +7,15 @@
 
 import Foundation
 
-struct RealtimeWeatherDto: Codable, Equatable {
-    var data: RealtimeWeather
+struct RealtimeWeatherDTO: Codable, Equatable, Hashable {
+    var data: RealtimeWeatherData
 }
 
-struct RealtimeWeatherData: Codable, Equatable {
+struct RealtimeWeatherData: Codable, Equatable, Hashable {
     var values: RealtimeWeather
 }
 
-struct RealtimeWeather: Codable, Equatable {
+struct RealtimeWeather: Codable, Equatable, Hashable {
     var humidity: Double
+    var temperature: Double
 }
