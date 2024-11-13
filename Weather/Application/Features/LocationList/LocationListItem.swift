@@ -27,12 +27,12 @@ struct LocationListItem: View {
                         .font(.caption2)
                 }
                 Spacer()
-                Text("10°")
+                Text("\(Int(location.realtimeWeather?.temperature ?? 20))°")
                     .font(.largeTitle)
                     .shadow(radius: 2)
             }
             HStack {
-                Text("대체로 청명함")
+                Text(location.realtimeWeather?.weatherText ?? "")
                 Spacer()
                 Text("최고: 13° 최저: 0°")
             }
