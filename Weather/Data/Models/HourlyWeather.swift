@@ -7,62 +7,60 @@
 
 import Foundation
 
-struct HourlyWeather: Hashable {
-    let time: String
-    let weatherCode: Int
-    let temperture: Int
+struct HourlyWeatherDTO: Codable, Equatable, Hashable {
+    var data: HourlyWeatherData
+}
+
+struct HourlyWeatherData: Codable, Equatable, Hashable {
+    var timelines: [HourlyWeatherTimeLine]
+}
+
+struct HourlyWeatherTimeLine: Codable, Equatable, Hashable {
+    var timestep: String
+    var intervals: [HourlyWeatherInterval]
+}
+
+struct HourlyWeatherInterval: Codable, Equatable, Hashable {
+    var startTime: String
+    var values: HourlyWeather
     
-    init(time: String, weatherCode: Int, temperture: Int) {
-        self.time = time
-        self.weatherCode = weatherCode
-        self.temperture = temperture
+    var hour: Int {
+        Calendar.current.component(.hour, from: time ?? Date())
+    }
+    var time: Date? {
+        ISO8601DateFormatter().date(from: startTime)
+    }
+    var weatherIconText: String {
+        let isDay = hour > 5 && hour < 19
+        
+        switch values.weatherCode {
+        case 1000, 1100: return isDay ? "sun.max.fill" : "moon.fill"
+        case 1101, 1102: return isDay ? "cloud.sun.fill" : "cloud.moon.fill"
+        case 1001: return "cloud.fill"
+        case 2000: return "cloud.fog.fill"
+        case 2100: return isDay ? "sun.haze.fill" : "moon.haze.fill"
+        case 4000: return isDay ? "cloud.sun.rain.fill" : "cloud.moon.rain.fill"
+        case 4001: return "cloud.rain.fill"
+        case 4200: return "cloud.drizzle.fill"
+        case 4201: return "cloud.heavyrain.fill"
+        case 5000: return "snowflake"
+        case 5001: return "cloud.sleet.fill"
+        case 5100: return "snowflake"
+        case 5101: return "cloud.snow.fill"
+        case 6000: return "cloud.sleet.fill"
+        case 6001: return "cloud.sleet.fill"
+        case 6200: return "cloud.sleet.fill"
+        case 6201: return "cloud.sleet.fill"
+        case 7000: return "cloud.hail.fill"
+        case 7101: return "cloud.hail.fill"
+        case 7102: return "cloud.hail.fill"
+        case 8000: return "cloud.bolt.rain.fill"
+        default: return "sun.max.fill"
+        }
     }
 }
 
-let dummyHourlyWeather: [HourlyWeather] = [
-    HourlyWeather(
-        time: "지금",
-        weatherCode: 3,
-        temperture: 21
-    ),
-    HourlyWeather(
-        time: "12시",
-        weatherCode: 3,
-        temperture: 22
-    ),
-    HourlyWeather(
-        time: "13시",
-        weatherCode: 3,
-        temperture: 23
-    ),
-    HourlyWeather(
-        time: "14시",
-        weatherCode: 3,
-        temperture: 23
-    ),
-    HourlyWeather(
-        time: "15시",
-        weatherCode: 3,
-        temperture: 23
-    ),
-    HourlyWeather(
-        time: "16시",
-        weatherCode: 3,
-        temperture: 22
-    ),
-    HourlyWeather(
-        time: "17시",
-        weatherCode: 3,
-        temperture: 21
-    ),
-    HourlyWeather(
-        time: "18시",
-        weatherCode: 3,
-        temperture: 21
-    ),
-    HourlyWeather(
-        time: "19시",
-        weatherCode: 3,
-        temperture: 20
-    )
-]
+struct HourlyWeather: Codable, Equatable, Hashable {
+    var temperature: Double
+    var weatherCode: Int
+}

@@ -23,7 +23,7 @@ struct LocationListReducer {
     enum Action: BindableAction {
         case binding(BindingAction<State>)
         case onAppear
-        case weatherResponse(Result<[RealtimeWeather], Error>)
+        case weatherResponse(Result<[LocationWeatherData], Error>)
         case locationTapped(Location)
         case clearTapped
     }
@@ -34,23 +34,31 @@ struct LocationListReducer {
         BindingReducer()
         Reduce { state, action in
             switch action {
-            case .weatherResponse(.success(let realtimeWeathers)):
+            case .weatherResponse(.success(let weatherData)):
                 print("LocationListReducer: Success")
-                for index in realtimeWeathers.indices {
-                    state.locations[index].realtimeWeather = realtimeWeathers[index]
+                for index in weatherData.indices {
+                    state.locations[index].realtimeWeather = weatherData[index].realtimeWeather
+                    state.locations[index].hourlyWeatherIntervals = weatherData[index].hourlyWeatherIntervals
                 }
                 return .none
             case .weatherResponse(.failure(let error)):
                 print("LocationListReducer: Failure \(error.localizedDescription)")
+                // TODO: Error Handling
                 return .none
             case .onAppear:
                 let locations = state.locations
                 return .run { send in
                     await send(.weatherResponse(Result {
-                        var result: [RealtimeWeather] = []
+                        var result: [LocationWeatherData] = []
                         for location in locations {
                             let realtimeWeatherDTO = try await weatherClient.requestLocationRealtime(location)
-                            result.append(realtimeWeatherDTO.data.values)
+                            let hourlyWeatherDTO = try await weatherClient.requestLocationHourlyTimelines(location)
+                            result.append(
+                                LocationWeatherData(
+                                    realtimeWeather: realtimeWeatherDTO.data.values,
+                                    hourlyWeatherIntervals: hourlyWeatherDTO.data.timelines.first?.intervals ?? []
+                                )
+                            )
                         }
                         return result
                     }))
