@@ -59,7 +59,7 @@ struct WeatherClient {
     }
     
     var requestLocationHourlyTimelines: @Sendable (Location) async throws -> HourlyWeatherDTO
-    var requestLocationDailyTimelines: @Sendable (Location) async throws -> Void
+    var requestLocationDailyTimelines: @Sendable (Location) async throws -> DailyWeatherDTO
     var requestLocationRealtime: @Sendable (Location) async throws -> RealtimeWeatherDTO
 }
 
@@ -71,40 +71,53 @@ extension DependencyValues {
 }
 
 extension WeatherClient: DependencyKey {
-    static let liveValue: WeatherClient = Self(
-        requestLocationHourlyTimelines: { location in
-            let geoPoint = "\(location.latitude), \(location.longitude)"
-            let result = try await request(
-                url: "timelines",
-                method: .post,
-                parameters: [
-                    "location": geoPoint,
-                    "fields": ["temperature", "weatherCode"],
-                    "units": "metric",
-                    "timesteps": ["1h"],
-                    "startTime": "now",
-                    "endTime": "nowPlus24h"
-                ],
-                type: HourlyWeatherDTO.self
-            )
-            return result
-        }, requestLocationDailyTimelines: { location in
-            let query = "\(location.latitude), \(location.longitude)"
-            
-            
-        }, requestLocationRealtime: { location in
-            let geoPoint = "\(location.latitude), \(location.longitude)"
-            let result = try await request(
-                url: "weather/realtime",
-                method: .get,
-                queryItems: [
-                    URLQueryItem(name: "location", value: geoPoint)
-                ],
-                type: RealtimeWeatherDTO.self
-            )
-            return result
-        }
-    )
+//    static let liveValue: WeatherClient = Self(
+//        requestLocationHourlyTimelines: { location in
+//            let geoPoint = "\(location.latitude), \(location.longitude)"
+//            let result = try await request(
+//                url: "timelines",
+//                method: .post,
+//                parameters: [
+//                    "location": geoPoint,
+//                    "fields": ["temperature", "weatherCode"],
+//                    "units": "metric",
+//                    "timesteps": ["1h"],
+//                    "startTime": "now",
+//                    "endTime": "nowPlus24h"
+//                ],
+//                type: HourlyWeatherDTO.self
+//            )
+//            return result
+//        }, requestLocationDailyTimelines: { location in
+//            let geoPoint = "\(location.latitude), \(location.longitude)"
+//            let result = try await request(
+//                url: "timelines",
+//                method: .post,
+//                parameters: [
+//                    "location": geoPoint,
+//                    "fields": ["temperatureMax", "temperatureMin", "weatherCode"],
+//                    "units": "metric",
+//                    "timesteps": ["1d"],
+//                    "startTime": "now",
+//                    "endTime": "nowPlus5d"
+//                ],
+//                type: DailyWeatherDTO.self
+//            )
+//            return result
+//        }, requestLocationRealtime: { location in
+//            let geoPoint = "\(location.latitude), \(location.longitude)"
+//            let result = try await request(
+//                url: "weather/realtime",
+//                method: .get,
+//                queryItems: [
+//                    URLQueryItem(name: "location", value: geoPoint)
+//                ],
+//                type: RealtimeWeatherDTO.self
+//            )
+//            return result
+//        }
+//    )
+    static let liveValue: WeatherClient = Self.previewValue
     
     static let previewValue: WeatherClient = Self(
         requestLocationHourlyTimelines: { location in
@@ -149,6 +162,41 @@ extension WeatherClient: DependencyKey {
             )
         }, requestLocationDailyTimelines: { location in
             try await Task.sleep(for: .seconds(1))
+            return DailyWeatherDTO(
+                data: DailyWeatherData(
+                    timelines: [
+                        DailyWeatherTimeLine(
+                            timestep: "1d",
+                            intervals: [
+                                DailyWeatherInterval(
+                                    startTime: "2024-11-13T11:00:00Z",
+                                    values: DailyWeather(temperatureMin: -2.07, temperatureMax: 6.81, weatherCode: 1000)
+                                ),
+                                DailyWeatherInterval(
+                                    startTime: "2024-11-14T11:00:00Z",
+                                    values: DailyWeather(temperatureMin: -4.3, temperatureMax: 6.44, weatherCode: 1001)
+                                ),
+                                DailyWeatherInterval(
+                                    startTime: "2024-11-15T11:00:00Z",
+                                    values: DailyWeather(temperatureMin: -4.32, temperatureMax: 11.67, weatherCode: 1001)
+                                ),
+                                DailyWeatherInterval(
+                                    startTime: "2024-11-16T11:00:00Z",
+                                    values: DailyWeather(temperatureMin: 7.15, temperatureMax: 13.1, weatherCode: 1000)
+                                ),
+                                DailyWeatherInterval(
+                                    startTime: "2024-11-17T11:00:00Z",
+                                    values: DailyWeather(temperatureMin: 7.39, temperatureMax: 13.97, weatherCode: 1001)
+                                ),
+                                DailyWeatherInterval(
+                                    startTime: "2024-11-18T11:00:00Z",
+                                    values: DailyWeather(temperatureMin: 8.76, temperatureMax: 14.31, weatherCode: 1001)
+                                )
+                            ]
+                        )
+                    ]
+                )
+            )
         }, requestLocationRealtime: { location in
             try await Task.sleep(for: .seconds(1))
             return RealtimeWeatherDTO(

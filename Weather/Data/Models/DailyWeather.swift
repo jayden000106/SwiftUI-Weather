@@ -7,79 +7,62 @@
 
 import Foundation
 
-struct DailyWeather: Hashable {
-    let weekday: String
-    let weatherCode: Int
-    let minTemperture: Int
-    let maxTemperture: Int
+struct DailyWeatherDTO: Codable, Equatable, Hashable {
+    var data: DailyWeatherData
+}
+
+struct DailyWeatherData: Codable, Equatable, Hashable {
+    var timelines: [DailyWeatherTimeLine]
+}
+
+struct DailyWeatherTimeLine: Codable, Equatable, Hashable {
+    var timestep: String
+    var intervals: [DailyWeatherInterval]
+}
+
+struct DailyWeatherInterval: Codable, Equatable, Hashable {
+    var startTime: String
+    var values: DailyWeather
     
-    init(weekday: String, weatherCode: Int, minTemperture: Int, maxTemperture: Int) {
-        self.weekday = weekday
-        self.weatherCode = weatherCode
-        self.minTemperture = minTemperture
-        self.maxTemperture = maxTemperture
+    var date: Date? {
+        ISO8601DateFormatter().date(from: startTime)
+    }
+    var weekdayText: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "E"
+        formatter.locale = Locale(identifier: "ko_KR")
+        return formatter.string(from: date ?? Date())
+    }
+    var weatherIconText: String {
+        switch values.weatherCode {
+        case 1000, 1100: return "sun.max.fill"
+        case 1101, 1102: return "cloud.sun.fill"
+        case 1001: return "cloud.fill"
+        case 2000: return "cloud.fog.fill"
+        case 2100: return "sun.haze.fill"
+        case 4000: return "cloud.sun.rain.fill"
+        case 4001: return "cloud.rain.fill"
+        case 4200: return "cloud.drizzle.fill"
+        case 4201: return "cloud.heavyrain.fill"
+        case 5000: return "snowflake"
+        case 5001: return "cloud.sleet.fill"
+        case 5100: return "snowflake"
+        case 5101: return "cloud.snow.fill"
+        case 6000: return "cloud.sleet.fill"
+        case 6001: return "cloud.sleet.fill"
+        case 6200: return "cloud.sleet.fill"
+        case 6201: return "cloud.sleet.fill"
+        case 7000: return "cloud.hail.fill"
+        case 7101: return "cloud.hail.fill"
+        case 7102: return "cloud.hail.fill"
+        case 8000: return "cloud.bolt.rain.fill"
+        default: return "sun.max.fill"
+        }
     }
 }
 
-let dummyDailyWeather: [DailyWeather] = [
-    DailyWeather(
-        weekday: "오늘",
-        weatherCode: 3,
-        minTemperture: 11,
-        maxTemperture: 24
-    ),
-    DailyWeather(
-        weekday: "월",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 23
-    ),
-    DailyWeather(
-        weekday: "화",
-        weatherCode: 3,
-        minTemperture: 11,
-        maxTemperture: 22
-    ),
-    DailyWeather(
-        weekday: "수",
-        weatherCode: 3,
-        minTemperture: 13,
-        maxTemperture: 23
-    ),
-    DailyWeather(
-        weekday: "목",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 24
-    ),
-    DailyWeather(
-        weekday: "금",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 24
-    ),
-    DailyWeather(
-        weekday: "토",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 24
-    ),
-    DailyWeather(
-        weekday: "일",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 24
-    ),
-    DailyWeather(
-        weekday: "월",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 24
-    ),
-    DailyWeather(
-        weekday: "화",
-        weatherCode: 3,
-        minTemperture: 12,
-        maxTemperture: 24
-    )
-]
+struct DailyWeather: Codable, Equatable, Hashable {
+    var temperatureMin: Double
+    var temperatureMax: Double
+    var weatherCode: Int
+}

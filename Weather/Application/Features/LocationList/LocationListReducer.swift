@@ -39,11 +39,11 @@ struct LocationListReducer {
                 for index in weatherData.indices {
                     state.locations[index].realtimeWeather = weatherData[index].realtimeWeather
                     state.locations[index].hourlyWeatherIntervals = weatherData[index].hourlyWeatherIntervals
+                    state.locations[index].dailyWeatherIntervals = weatherData[index].dailyWeatherIntervals
                 }
                 return .none
             case .weatherResponse(.failure(let error)):
                 print("LocationListReducer: Failure \(error.localizedDescription)")
-                // TODO: Error Handling
                 return .none
             case .onAppear:
                 let locations = state.locations
@@ -53,10 +53,12 @@ struct LocationListReducer {
                         for location in locations {
                             let realtimeWeatherDTO = try await weatherClient.requestLocationRealtime(location)
                             let hourlyWeatherDTO = try await weatherClient.requestLocationHourlyTimelines(location)
+                            let dailyWeatherDTO = try await weatherClient.requestLocationDailyTimelines(location)
                             result.append(
                                 LocationWeatherData(
                                     realtimeWeather: realtimeWeatherDTO.data.values,
-                                    hourlyWeatherIntervals: hourlyWeatherDTO.data.timelines.first?.intervals ?? []
+                                    hourlyWeatherIntervals: hourlyWeatherDTO.data.timelines.first?.intervals ?? [],
+                                    dailyWeatherIntervals: dailyWeatherDTO.data.timelines.first?.intervals ?? []
                                 )
                             )
                         }
