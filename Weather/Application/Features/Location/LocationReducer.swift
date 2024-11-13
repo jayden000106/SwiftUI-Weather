@@ -14,6 +14,7 @@ struct LocationReducer {
     @ObservableState
     struct State {
         var selectedLocation: Location
+        var locations: [Location]
     }
     
     enum Action: BindableAction {

@@ -9,10 +9,12 @@ import SwiftUI
 
 struct LocationTabBar: View {
     private let selected: Location
+    private let selections: [Location]
     private let onTapList: () -> Void
     
-    init(selected: Location, onTapList: @escaping () -> Void) {
+    init(selected: Location, selections: [Location], onTapList: @escaping () -> Void) {
         self.selected = selected
+        self.selections = selections
         self.onTapList = onTapList
     }
     
@@ -27,8 +29,8 @@ struct LocationTabBar: View {
             }
             Spacer()
             HStack(spacing: 8) {
-                ForEach(dummyLocations, id: \.self) { location in
-                    if location == dummyLocations.first {
+                ForEach(selections, id: \.self) { location in
+                    if location == selections.first {
                         Image(systemName: "location.fill")
                             .font(.system(size: 10))
                             .foregroundStyle(selected == location ? Color.tabBarSelected : Color.tabBarUnselected)
@@ -60,6 +62,7 @@ struct LocationTabBar: View {
 #Preview {
     LocationTabBar(
         selected: dummyLocations.first!,
+        selections: dummyLocations,
         onTapList: {}
     )
     .background(Color.black)

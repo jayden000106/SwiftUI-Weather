@@ -73,7 +73,7 @@ private extension LocationListView {
     
     var locationList: some View {
         VStack(spacing: 8) {
-            ForEach(dummyLocations) { location in
+            ForEach(store.locations) { location in
                 LocationListItem(location: location)
                     .matchedGeometryEffect(id: location.id, in: animation)
                     .onTapGesture {
