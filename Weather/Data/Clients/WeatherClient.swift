@@ -90,7 +90,7 @@ extension WeatherClient: DependencyKey {
             try await Task.sleep(for: .seconds(1))
             return RealtimeWeatherDTO(
                 data: RealtimeWeatherData(
-                    values: RealtimeWeather(humidity: 85, temperature: 11)
+                    values: RealtimeWeather(weatherCode: 1001, humidity: 85, temperature: 11)
                 )
             )
         }
