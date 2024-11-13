@@ -24,11 +24,14 @@ struct HourlyWeatherInterval: Codable, Equatable, Hashable {
     var startTime: String
     var values: HourlyWeather
     
-    var time: Date? {
-        ISO8601DateFormatter().date(from: startTime)
-    }
     var hour: Int {
-        Calendar.current.component(.hour, from: time ?? Date())
+        let isoFormatter = ISO8601DateFormatter()
+        let time = isoFormatter.date(from: startTime)
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "HH"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        return Int(dateFormatter.string(from: time ?? Date())) ?? 0
     }
     var weatherIconText: String {
         let isDay = hour > 5 && hour < 19

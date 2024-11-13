@@ -24,14 +24,14 @@ struct DailyWeatherInterval: Codable, Equatable, Hashable {
     var startTime: String
     var values: DailyWeather
     
-    var date: Date? {
-        ISO8601DateFormatter().date(from: startTime)
-    }
     var weekdayText: String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "E"
-        formatter.locale = Locale(identifier: "ko_KR")
-        return formatter.string(from: date ?? Date())
+        let isoFormatter = ISO8601DateFormatter()
+        let date = isoFormatter.date(from: startTime)
+        
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "E"
+        dateFormatter.locale = Locale(identifier: "ko_KR")
+        return dateFormatter.string(from: date ?? Date())
     }
     var weatherIconText: String {
         switch values.weatherCode {
