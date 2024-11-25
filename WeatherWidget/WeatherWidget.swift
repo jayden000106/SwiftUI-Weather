@@ -102,9 +102,52 @@ struct WeatherWidgetEntryView : View {
             .foregroundStyle(.white)
         default:
             VStack(alignment: .leading) {
-                Text("Time:")
-                Text(entry.date, style: .time)
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(entry.location ?? "서울특별시")
+                            .font(.subheadline)
+                        Text("\(Int(entry.temperature ?? 14))°")
+                            .font(.title)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
+                            .symbolRenderingMode(.multicolor)
+                        Text(getWeatherText(code: entry.weathreCode ?? 1000))
+                            .font(.caption)
+                        Text("최고:\(Int(entry.temperatureMax ?? 10))° 최저 \(Int(entry.temperatureMax ?? 22))°")
+                            .font(.caption)
+                    }
+                }
+                Spacer()
+                HStack {
+                    ForEach(0..<7, id: \.self) { index in
+                        if (index < entry.hourlyWeather?.count ?? 0) {
+                            VStack {
+                                Text("월")
+                                    .font(.caption)
+                                Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
+                                    .symbolRenderingMode(.multicolor)
+                                Text("\(12)°")
+                                    .font(.caption)
+                            }
+                            .frame(maxWidth: .infinity)
+                        } else {
+                            VStack(spacing: 2) {
+                                Text("월")
+                                    .font(.caption)
+                                Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
+                                    .symbolRenderingMode(.multicolor)
+                                Text("\(12)°")
+                                    .font(.caption)
+                            }
+                            .frame(maxWidth: .infinity)
+                        }
+                    }
+                }
             }
+            .shadow(radius: 4)
+            .foregroundStyle(.white)
         }
     }
     
@@ -225,7 +268,7 @@ struct WeatherWidget: Widget {
     }
 }
 
-#Preview(as: .systemSmall) {
+#Preview(as: .systemMedium) {
     WeatherWidget()
 } timeline: {
     WeatherEntry(date: .now)
