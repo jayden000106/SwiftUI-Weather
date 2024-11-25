@@ -30,8 +30,8 @@ struct ForecastOfDay: View {
             Text(isFirst ? "지금" : dailyWeatherInterval.weekdayText)
                 .foregroundStyle(Color.white)
             Spacer()
-            Image(systemName: "cloud.fill")
-                .foregroundStyle(Color.white)
+            Image(systemName: dailyWeatherInterval.weatherIconText)
+                .symbolRenderingMode(.multicolor)
             Spacer()
             HStack(spacing: 8) {
                 Text("\(Int(dailyWeatherInterval.values.temperatureMin))°")
