@@ -26,11 +26,13 @@ struct Provider: TimelineProvider {
             do {
                 let realtimeWeatherDTO = try await WeatherClient.shared.requestLocationRealtime(location: location)
                 let dailyWeatherDTO = try await WeatherClient.shared.requestLocationDailyTimelines(location: location)
+                let hourlyWeatherDTO = try await WeatherClient.shared.requestLocationHourlyTimelines(location: location)
                 
                 let entry = WeatherEntry(
                     date: date,
                     realtimeWeather: realtimeWeatherDTO.data.values,
-                    dailyWeather: dailyWeatherDTO.data.timelines.first?.intervals.first?.values
+                    dailyWeatherInterval: dailyWeatherDTO.data.timelines.first?.intervals,
+                    hourlyWeatherInterval: hourlyWeatherDTO.data.timelines.first?.intervals
                 )
                 entries.append(entry)
                 
@@ -52,25 +54,25 @@ struct WeatherEntry: TimelineEntry {
     let date: Date
     let location: Location
     let realtimeWeather: RealtimeWeather?
-    let dailyWeather: DailyWeather?
-    let hourlyWeather: [HourlyWeather]?
+    let dailyWeatherInterval: [DailyWeatherInterval]?
+    let hourlyWeatherInterval: [HourlyWeatherInterval]?
     
     init(
         date: Date,
         location: Location = WeatherClient.location,
         realtimeWeather: RealtimeWeather? = nil,
-        dailyWeather: DailyWeather? = nil,
-        hourlyWeather: [HourlyWeather] = []
+        dailyWeatherInterval: [DailyWeatherInterval]? = nil,
+        hourlyWeatherInterval: [HourlyWeatherInterval]? = nil
     ) {
         self.date = date
         self.location = location
         self.realtimeWeather = realtimeWeather
-        self.dailyWeather = dailyWeather
-        self.hourlyWeather = hourlyWeather
+        self.dailyWeatherInterval = dailyWeatherInterval
+        self.hourlyWeatherInterval = hourlyWeatherInterval
     }
 }
 
-struct WeatherWidgetEntryView : View {
+struct WeatherWidgetEntryView: View {
     @Environment(\.widgetFamily) private var widgetFamily
     
     var entry: Provider.Entry
@@ -78,13 +80,23 @@ struct WeatherWidgetEntryView : View {
     var body: some View {
         switch widgetFamily {
         case .systemSmall:
+            SmallWeatherWidgetView(entry: entry)
+        case .systemMedium:
+            MediumWeatherWidgetView(entry: entry)
+        default:
+            LargeWeatherWidgetView(entry: entry)
+        }
+    }
+    
+    struct SmallWeatherWidgetView: View {
+        var entry: Provider.Entry
+        
+        var body: some View {
             VStack(alignment: .leading, spacing: 4) {
-                Text("\(entry.date.ISO8601Format())")
-                    .font(.caption2)
                 VStack(alignment: .leading) {
                     Text(entry.location.name)
                         .font(.subheadline)
-                    Text("\(Int(entry.realtimeWeather?.temperature ?? 14))°")
+                    Text("\(Int(entry.realtimeWeather?.temperature ?? 0))°")
                         .font(.title)
                 }
                 Spacer()
@@ -93,15 +105,73 @@ struct WeatherWidgetEntryView : View {
                         .symbolRenderingMode(.multicolor)
                     Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                         .font(.caption)
-                    Text("최고:\(Int(entry.dailyWeather?.temperatureMax ?? 10))° 최저 \(Int(entry.dailyWeather?.temperatureMin ?? 22))°")
+                    Text("최고:\(Int(entry.dailyWeatherInterval?.first?.values.temperatureMax ?? 0))° 최저 \(Int(entry.dailyWeatherInterval?.first?.values.temperatureMin ?? 0))°")
                         .font(.caption)
                 }
             }
             .shadow(radius: 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .foregroundStyle(.white)
-        default:
+        }
+    }
+    
+    struct MediumWeatherWidgetView: View {
+        var entry: Provider.Entry
+        
+        var body: some View {
             VStack(alignment: .leading) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(entry.location.name)
+                            .font(.subheadline)
+                        Text("\(Int(entry.realtimeWeather?.temperature ?? 0))°")
+                            .font(.title)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Image(systemName: getIconText(code: entry.realtimeWeather?.weatherCode ?? 1000))
+                            .symbolRenderingMode(.multicolor)
+                        Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
+                            .font(.caption)
+                        Text("최고:\(Int(entry.dailyWeatherInterval?.first?.values.temperatureMax ?? 0))° 최저 \(Int((entry.dailyWeatherInterval?.first?.values.temperatureMin ?? 0)))°")
+                            .font(.caption)
+                    }
+                }
+                Spacer()
+                HStack {
+                    ForEach((entry.hourlyWeatherInterval ?? []).prefix(6), id: \.self) { interval in
+                        VStack {
+                            Text("\(interval.startTime)시")
+                                .font(.caption)
+                            Image(systemName: getIconText(code: interval.values.weatherCode))
+                                .symbolRenderingMode(.multicolor)
+                            Text("\(interval.values.temperature)°")
+                                .font(.caption)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+            }
+            .shadow(radius: 4)
+            .foregroundStyle(.white)
+        }
+    }
+    
+    struct LargeWeatherWidgetView: View {
+        var entry: Provider.Entry
+        
+        private var range: CGFloat {
+            return 80 / CGFloat(maxTempertureOfWeek - minTempertureOfWeek)
+        }
+        private var maxTempertureOfWeek: Double {
+            return entry.dailyWeatherInterval?.map { $0.values.temperatureMax }.max() ?? 40
+        }
+        private var minTempertureOfWeek: Double {
+            return entry.dailyWeatherInterval?.map { $0.values.temperatureMin }.min() ?? 0
+        }
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(entry.location.name)
@@ -115,31 +185,66 @@ struct WeatherWidgetEntryView : View {
                             .symbolRenderingMode(.multicolor)
                         Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                             .font(.caption)
-                        Text("최고:\(Int(entry.dailyWeather?.temperatureMax ?? 10))° 최저 \(entry.dailyWeather?.temperatureMin ?? 22)°")
+                        Text("최고:\(Int(entry.dailyWeatherInterval?.first?.values.temperatureMax ?? 0))° 최저 \(Int(entry.dailyWeatherInterval?.first?.values.temperatureMin ?? 0))°")
                             .font(.caption)
                     }
                 }
-                Spacer()
+                Divider()
                 HStack {
-                    ForEach(entry.hourlyWeather ?? [], id: \.self) { hourlyWeather in
+                    ForEach((entry.hourlyWeatherInterval ?? []).prefix(6), id: \.self) { interval in
                         VStack {
-                            Text("월")
+                            Text("\(interval.startTime)시")
                                 .font(.caption)
-                            Image(systemName: getIconText(code: hourlyWeather.weatherCode))
+                            Image(systemName: getIconText(code: interval.values.weatherCode))
                                 .symbolRenderingMode(.multicolor)
-                            Text("\(12)°")
+                            Text("\(interval.values.temperature)°")
                                 .font(.caption)
                         }
                         .frame(maxWidth: .infinity)
                     }
                 }
+                Divider()
+                VStack(spacing: 12) {
+                    ForEach((entry.dailyWeatherInterval ?? []).prefix(5), id: \.self) { interval in
+                        HStack(spacing: 24) {
+                            Text(interval.weekdayText)
+                            Image(systemName: getIconText(code: interval.values.weatherCode))
+                                .symbolRenderingMode(.multicolor)
+                            HStack {
+                                Text("\(interval.values.temperatureMin)°")
+                                
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .fill(.black.opacity(0.4))
+                                        .frame(height: 2)
+                                    
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .foregroundStyle(
+                                            .linearGradient(
+                                                colors: [Color.green, Color.yellow],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(height: 2)
+                                        .padding(.leading, CGFloat((interval.values.temperatureMin - minTempertureOfWeek)) * range)
+                                        .padding(.trailing, CGFloat((maxTempertureOfWeek - interval.values.temperatureMax)) * range)
+                                }
+                                .frame(width: 80)
+                                
+                                Text("\(interval.values.temperatureMax)°")
+                            }
+                        }
+                    }
+                }
+                Spacer()
             }
             .shadow(radius: 4)
             .foregroundStyle(.white)
         }
     }
     
-    private func getIconText(code: Int) -> String {
+    private static func getIconText(code: Int) -> String {
         switch code {
         case 1000, 1100: return "sun.max.fill"
         case 1101, 1102: return "cloud.sun.fill"
@@ -166,7 +271,7 @@ struct WeatherWidgetEntryView : View {
         }
     }
     
-    private func getWeatherText(code: Int) -> String {
+    private static func getWeatherText(code: Int) -> String {
         switch code {
         case 1000: return "청명함"
         case 1100: return "대체로 청명함"
@@ -256,7 +361,7 @@ struct WeatherWidget: Widget {
     }
 }
 
-#Preview(as: .systemMedium) {
+#Preview(as: .systemLarge) {
     WeatherWidget()
 } timeline: {
     WeatherEntry(date: .now)
