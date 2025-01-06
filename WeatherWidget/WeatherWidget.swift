@@ -18,61 +18,61 @@ struct Provider: TimelineProvider {
     }
     
     func getTimeline(in context: Context, completion: @escaping @Sendable (Timeline<WeatherEntry>) -> Void) {
-        var entries: [WeatherEntry] = []
-        
-        let entry = WeatherEntry(date: Date())
-        entries.append(entry)
-        
-        let timeline = Timeline(entries: entries, policy: .after(Date().addingTimeInterval(3600)))
-        completion(timeline)
+        Task {
+            var entries: [WeatherEntry] = []
+            let date = Date()
+            let location = WeatherClient.location
+            
+            do {
+                let realtimeWeatherDTO = try await WeatherClient.shared.requestLocationRealtime(location: location)
+                let dailyWeatherDTO = try await WeatherClient.shared.requestLocationDailyTimelines(location: location)
+                let hourlyWeatherDTO = try await WeatherClient.shared.requestLocationHourlyTimelines(location: location)
+                
+                let entry = WeatherEntry(
+                    date: date,
+                    realtimeWeather: realtimeWeatherDTO.data.values,
+                    dailyWeatherInterval: dailyWeatherDTO.data.timelines.first?.intervals,
+                    hourlyWeatherInterval: hourlyWeatherDTO.data.timelines.first?.intervals
+                )
+                entries.append(entry)
+                
+                let timeline = Timeline(entries: entries, policy: .after(Date().addingTimeInterval(3600)))
+                completion(timeline)
+            } catch {
+                print(error)
+                
+                let entry = WeatherEntry(date: date, location: location)
+                entries.append(entry)
+                let timeline = Timeline(entries: entries, policy: .after(Date().addingTimeInterval(3600)))
+                completion(timeline)
+            }
+        }
     }
 }
 
 struct WeatherEntry: TimelineEntry {
     let date: Date
-    let location: String?
-    let temperature: Double?
-    let temperatureMin: Double?
-    let temperatureMax: Double?
-    let weathreCode: Int?
-    let hourlyWeather: [HourlyWeather]?
+    let location: Location
+    let realtimeWeather: RealtimeWeather?
+    let dailyWeatherInterval: [DailyWeatherInterval]?
+    let hourlyWeatherInterval: [HourlyWeatherInterval]?
     
     init(
         date: Date,
-        location: String? = nil,
-        temperature: Double? = nil,
-        temperatureMin: Double? = nil,
-        temperatureMax: Double? = nil,
-        weathreCode: Int? = nil,
-        hourlyWeather: [HourlyWeather]? = nil
+        location: Location = WeatherClient.location,
+        realtimeWeather: RealtimeWeather? = nil,
+        dailyWeatherInterval: [DailyWeatherInterval]? = nil,
+        hourlyWeatherInterval: [HourlyWeatherInterval]? = nil
     ) {
         self.date = date
         self.location = location
-        self.temperature = temperature
-        self.temperatureMin = temperatureMin
-        self.temperatureMax = temperatureMax
-        self.weathreCode = weathreCode
-        self.hourlyWeather = hourlyWeather
+        self.realtimeWeather = realtimeWeather
+        self.dailyWeatherInterval = dailyWeatherInterval
+        self.hourlyWeatherInterval = hourlyWeatherInterval
     }
 }
 
-struct HourlyWeather {
-    let time: Date?
-    let temperature: Double?
-    let weatherCode: Int?
-    
-    init(
-        time: Date? = nil,
-        temperature: Double? = nil,
-        weatherCode: Int? = nil
-    ) {
-        self.time = time
-        self.temperature = temperature
-        self.weatherCode = weatherCode
-    }
-}
-
-struct WeatherWidgetEntryView : View {
+struct WeatherWidgetEntryView: View {
     @Environment(\.widgetFamily) private var widgetFamily
     
     var entry: Provider.Entry
@@ -80,69 +80,75 @@ struct WeatherWidgetEntryView : View {
     var body: some View {
         switch widgetFamily {
         case .systemSmall:
+            SmallWeatherWidgetView(entry: entry)
+        case .systemMedium:
+            MediumWeatherWidgetView(entry: entry)
+        default:
+            LargeWeatherWidgetView(entry: entry)
+        }
+    }
+    
+    struct SmallWeatherWidgetView: View {
+        var entry: Provider.Entry
+        
+        var body: some View {
             VStack(alignment: .leading, spacing: 4) {
                 VStack(alignment: .leading) {
-                    Text(entry.location ?? "서울특별시")
+                    Text(entry.location.name)
                         .font(.subheadline)
-                    Text("\(Int(entry.temperature ?? 14))°")
+                    Text("\(Int(entry.realtimeWeather?.temperature ?? 0))°")
                         .font(.title)
                 }
                 Spacer()
                 VStack(alignment: .leading, spacing: 2) {
-                    Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
+                    Image(systemName: getIconText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                         .symbolRenderingMode(.multicolor)
-                    Text(getWeatherText(code: entry.weathreCode ?? 1000))
+                    Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                         .font(.caption)
-                    Text("최고:\(Int(entry.temperatureMax ?? 10))° 최저 \(Int(entry.temperatureMax ?? 22))°")
+                    Text("최고:\(Int(entry.dailyWeatherInterval?.first?.values.temperatureMax ?? 0))° 최저 \(Int(entry.dailyWeatherInterval?.first?.values.temperatureMin ?? 0))°")
                         .font(.caption)
                 }
             }
             .shadow(radius: 4)
             .frame(maxWidth: .infinity, alignment: .leading)
             .foregroundStyle(.white)
-        default:
+        }
+    }
+    
+    struct MediumWeatherWidgetView: View {
+        var entry: Provider.Entry
+        
+        var body: some View {
             VStack(alignment: .leading) {
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(entry.location ?? "서울특별시")
+                        Text(entry.location.name)
                             .font(.subheadline)
-                        Text("\(Int(entry.temperature ?? 14))°")
+                        Text("\(Int(entry.realtimeWeather?.temperature ?? 0))°")
                             .font(.title)
                     }
                     Spacer()
-                    VStack(alignment: .trailing, spacing: 4) {
-                        Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Image(systemName: getIconText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                             .symbolRenderingMode(.multicolor)
-                        Text(getWeatherText(code: entry.weathreCode ?? 1000))
+                        Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                             .font(.caption)
-                        Text("최고:\(Int(entry.temperatureMax ?? 10))° 최저 \(Int(entry.temperatureMax ?? 22))°")
+                        Text("최고:\(Int(entry.dailyWeatherInterval?.first?.values.temperatureMax ?? 0))° 최저 \(Int((entry.dailyWeatherInterval?.first?.values.temperatureMin ?? 0)))°")
                             .font(.caption)
                     }
                 }
                 Spacer()
                 HStack {
-                    ForEach(0..<7, id: \.self) { index in
-                        if (index < entry.hourlyWeather?.count ?? 0) {
-                            VStack {
-                                Text("월")
-                                    .font(.caption)
-                                Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
-                                    .symbolRenderingMode(.multicolor)
-                                Text("\(12)°")
-                                    .font(.caption)
-                            }
-                            .frame(maxWidth: .infinity)
-                        } else {
-                            VStack(spacing: 2) {
-                                Text("월")
-                                    .font(.caption)
-                                Image(systemName: getIconText(code: entry.weathreCode ?? 1000))
-                                    .symbolRenderingMode(.multicolor)
-                                Text("\(12)°")
-                                    .font(.caption)
-                            }
-                            .frame(maxWidth: .infinity)
+                    ForEach((entry.hourlyWeatherInterval ?? []).prefix(6), id: \.self) { interval in
+                        VStack(spacing: 4) {
+                            Text("\(interval.hour)시")
+                                .font(.caption2)
+                            Image(systemName: getIconText(code: interval.values.weatherCode))
+                                .symbolRenderingMode(.multicolor)
+                            Text("\(Int(interval.values.temperature))°")
+                                .font(.caption)
                         }
+                        .frame(maxWidth: .infinity)
                     }
                 }
             }
@@ -151,7 +157,100 @@ struct WeatherWidgetEntryView : View {
         }
     }
     
-    private func getIconText(code: Int) -> String {
+    struct LargeWeatherWidgetView: View {
+        var entry: Provider.Entry
+        
+        private var range: CGFloat {
+            return 120 / CGFloat(maxTempertureOfWeek - minTempertureOfWeek)
+        }
+        private var maxTempertureOfWeek: Double {
+            return entry.dailyWeatherInterval?.map { $0.values.temperatureMax }.max() ?? 40
+        }
+        private var minTempertureOfWeek: Double {
+            return entry.dailyWeatherInterval?.map { $0.values.temperatureMin }.min() ?? 0
+        }
+        
+        var body: some View {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(entry.location.name)
+                            .font(.subheadline)
+                        Text("\(Int(entry.realtimeWeather?.temperature ?? 14))°")
+                            .font(.title)
+                    }
+                    Spacer()
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Image(systemName: getIconText(code: entry.realtimeWeather?.weatherCode ?? 1000))
+                            .symbolRenderingMode(.multicolor)
+                        Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
+                            .font(.caption)
+                        Text("최고:\(Int(entry.dailyWeatherInterval?.first?.values.temperatureMax ?? 0))° 최저 \(Int(entry.dailyWeatherInterval?.first?.values.temperatureMin ?? 0))°")
+                            .font(.caption)
+                    }
+                }
+                Divider()
+                HStack {
+                    ForEach((entry.hourlyWeatherInterval ?? []).prefix(6), id: \.self) { interval in
+                        VStack(spacing: 4) {
+                            Text("\(interval.hour)시")
+                                .font(.caption)
+                            Image(systemName: getIconText(code: interval.values.weatherCode))
+                                .symbolRenderingMode(.multicolor)
+                            Text("\(Int(interval.values.temperature))°")
+                                .font(.caption)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                }
+                Divider()
+                VStack(spacing: 12) {
+                    ForEach((entry.dailyWeatherInterval ?? []).prefix(5), id: \.self) { interval in
+                        HStack(spacing: 0) {
+                            Text(interval.weekdayText)
+                            
+                            Spacer()
+                            
+                            Image(systemName: getIconText(code: interval.values.weatherCode))
+                                .symbolRenderingMode(.multicolor)
+                            
+                            Spacer()
+                            
+                            HStack {
+                                Text("\(Int(interval.values.temperatureMin))°")
+                                
+                                ZStack {
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .fill(.black.opacity(0.4))
+                                        .frame(height: 2)
+                                    
+                                    RoundedRectangle(cornerRadius: 4)
+                                        .foregroundStyle(
+                                            .linearGradient(
+                                                colors: [Color.green, Color.yellow],
+                                                startPoint: .leading,
+                                                endPoint: .trailing
+                                            )
+                                        )
+                                        .frame(height: 2)
+                                        .padding(.leading, CGFloat((interval.values.temperatureMin - minTempertureOfWeek)) * range)
+                                        .padding(.trailing, CGFloat((maxTempertureOfWeek - interval.values.temperatureMax)) * range)
+                                }
+                                .frame(width: 120)
+                                
+                                Text("\(Int(interval.values.temperatureMax))°")
+                            }
+                        }
+                    }
+                }
+                Spacer()
+            }
+            .shadow(radius: 4)
+            .foregroundStyle(.white)
+        }
+    }
+    
+    private static func getIconText(code: Int) -> String {
         switch code {
         case 1000, 1100: return "sun.max.fill"
         case 1101, 1102: return "cloud.sun.fill"
@@ -178,7 +277,7 @@ struct WeatherWidgetEntryView : View {
         }
     }
     
-    private func getWeatherText(code: Int) -> String {
+    private static func getWeatherText(code: Int) -> String {
         switch code {
         case 1000: return "청명함"
         case 1100: return "대체로 청명함"
@@ -215,7 +314,7 @@ struct WeatherWidget: Widget {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             WeatherWidgetEntryView(entry: entry)
                 .containerBackground(
-                    getBackground(code: entry.weathreCode ?? 1000),
+                    getBackground(code: entry.realtimeWeather?.weatherCode ?? 1000),
                     for: .widget
                 )
         }
@@ -268,7 +367,7 @@ struct WeatherWidget: Widget {
     }
 }
 
-#Preview(as: .systemMedium) {
+#Preview(as: .systemLarge) {
     WeatherWidget()
 } timeline: {
     WeatherEntry(date: .now)
