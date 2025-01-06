@@ -128,7 +128,7 @@ struct WeatherWidgetEntryView: View {
                             .font(.title)
                     }
                     Spacer()
-                    VStack(alignment: .trailing, spacing: 4) {
+                    VStack(alignment: .trailing, spacing: 2) {
                         Image(systemName: getIconText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                             .symbolRenderingMode(.multicolor)
                         Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
@@ -140,12 +140,12 @@ struct WeatherWidgetEntryView: View {
                 Spacer()
                 HStack {
                     ForEach((entry.hourlyWeatherInterval ?? []).prefix(6), id: \.self) { interval in
-                        VStack {
-                            Text("\(interval.startTime)시")
-                                .font(.caption)
+                        VStack(spacing: 4) {
+                            Text("\(interval.hour)시")
+                                .font(.caption2)
                             Image(systemName: getIconText(code: interval.values.weatherCode))
                                 .symbolRenderingMode(.multicolor)
-                            Text("\(interval.values.temperature)°")
+                            Text("\(Int(interval.values.temperature))°")
                                 .font(.caption)
                         }
                         .frame(maxWidth: .infinity)
@@ -161,7 +161,7 @@ struct WeatherWidgetEntryView: View {
         var entry: Provider.Entry
         
         private var range: CGFloat {
-            return 80 / CGFloat(maxTempertureOfWeek - minTempertureOfWeek)
+            return 120 / CGFloat(maxTempertureOfWeek - minTempertureOfWeek)
         }
         private var maxTempertureOfWeek: Double {
             return entry.dailyWeatherInterval?.map { $0.values.temperatureMax }.max() ?? 40
@@ -180,7 +180,7 @@ struct WeatherWidgetEntryView: View {
                             .font(.title)
                     }
                     Spacer()
-                    VStack(alignment: .trailing, spacing: 4) {
+                    VStack(alignment: .trailing, spacing: 2) {
                         Image(systemName: getIconText(code: entry.realtimeWeather?.weatherCode ?? 1000))
                             .symbolRenderingMode(.multicolor)
                         Text(getWeatherText(code: entry.realtimeWeather?.weatherCode ?? 1000))
@@ -192,12 +192,12 @@ struct WeatherWidgetEntryView: View {
                 Divider()
                 HStack {
                     ForEach((entry.hourlyWeatherInterval ?? []).prefix(6), id: \.self) { interval in
-                        VStack {
-                            Text("\(interval.startTime)시")
+                        VStack(spacing: 4) {
+                            Text("\(interval.hour)시")
                                 .font(.caption)
                             Image(systemName: getIconText(code: interval.values.weatherCode))
                                 .symbolRenderingMode(.multicolor)
-                            Text("\(interval.values.temperature)°")
+                            Text("\(Int(interval.values.temperature))°")
                                 .font(.caption)
                         }
                         .frame(maxWidth: .infinity)
@@ -206,12 +206,18 @@ struct WeatherWidgetEntryView: View {
                 Divider()
                 VStack(spacing: 12) {
                     ForEach((entry.dailyWeatherInterval ?? []).prefix(5), id: \.self) { interval in
-                        HStack(spacing: 24) {
+                        HStack(spacing: 0) {
                             Text(interval.weekdayText)
+                            
+                            Spacer()
+                            
                             Image(systemName: getIconText(code: interval.values.weatherCode))
                                 .symbolRenderingMode(.multicolor)
+                            
+                            Spacer()
+                            
                             HStack {
-                                Text("\(interval.values.temperatureMin)°")
+                                Text("\(Int(interval.values.temperatureMin))°")
                                 
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 4)
@@ -230,9 +236,9 @@ struct WeatherWidgetEntryView: View {
                                         .padding(.leading, CGFloat((interval.values.temperatureMin - minTempertureOfWeek)) * range)
                                         .padding(.trailing, CGFloat((maxTempertureOfWeek - interval.values.temperatureMax)) * range)
                                 }
-                                .frame(width: 80)
+                                .frame(width: 120)
                                 
-                                Text("\(interval.values.temperatureMax)°")
+                                Text("\(Int(interval.values.temperatureMax))°")
                             }
                         }
                     }

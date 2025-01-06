@@ -78,11 +78,10 @@ final class WeatherClient {
             type: RealtimeWeatherDTO.self
         )
         return result
-        //        try await Task.sleep(for: .milliseconds(100))
         //        return RealtimeWeatherDTO(
         //            data: RealtimeWeatherData(
         //                values: RealtimeWeather(
-        //                    weatherCode: 1001,
+        //                    weatherCode: 1100,
         //                    humidity: 30,
         //                    temperature: 1.2
         //                )
@@ -107,7 +106,6 @@ final class WeatherClient {
             type: DailyWeatherDTO.self
         )
         return result
-        //        try await Task.sleep(for: .milliseconds(100))
         //        return DailyWeatherDTO(
         //            data: DailyWeatherData(
         //                timelines: [
@@ -119,7 +117,7 @@ final class WeatherClient {
         //                                values: DailyWeather(
         //                                    temperatureMin: -10.1,
         //                                    temperatureMax: 2.0,
-        //                                    weatherCode: 1001
+        //                                    weatherCode: 1100
         //                                )
         //                            )
         //                        ]
